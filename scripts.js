@@ -530,7 +530,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "FERME DU HOHBERG": {
-    fichier: "data/stats_jardins_productifs/stats_Ferme_du_Hohberg_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/stats_Ferme_Du_Hohberg_2025.xlsx",
     date: "2025",
     totalKg: 152,
     superficieCultivee: 1500,
@@ -844,9 +844,36 @@ function updateStats() {
 
 
 function toggleSidebar() {
-  sidebarOpen = !sidebarOpen;
   const sidebar = document.getElementById('sidebar');
+  const ressources = document.getElementById('sidebar-ressources');
+
+  // Fermer les ressources si ouvertes
+  ressources.style.display = 'none';
+  ressources.classList.add('hidden');
+
+  sidebarOpen = !sidebarOpen;
   sidebar.classList.toggle('collapsed');
+  setTimeout(() => map.invalidateSize(), 320);
+}
+
+function toggleRessources() {
+  const sidebar = document.getElementById('sidebar');
+  const ressources = document.getElementById('sidebar-ressources');
+  const isOpen = ressources.style.display === 'flex';
+
+  if (isOpen) {
+    ressources.style.display = 'none';
+    ressources.classList.add('hidden');
+  } else {
+    // Fermer la sidebar principale si ouverte
+    if (!sidebar.classList.contains('collapsed')) {
+      sidebarOpen = false;
+      sidebar.classList.add('collapsed');
+    }
+    ressources.style.display = 'flex';
+    ressources.classList.remove('hidden');
+    lucide.createIcons();
+  }
   setTimeout(() => map.invalidateSize(), 320);
 }
 
@@ -1304,6 +1331,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Gestionnaires optimisés
   document.getElementById('sidebarToggle').addEventListener('click', debouncedHandlers.sidebar);
+  document.getElementById('ressourcesBtn').addEventListener('click', toggleRessources);
   document.getElementById('searchBtn').addEventListener('click', debouncedHandlers.search);
   document.getElementById('contactBtn').addEventListener('click', debouncedHandlers.contact);
   document.getElementById('exportBtn').addEventListener('click', debouncedHandlers.export);
@@ -2518,7 +2546,7 @@ setTimeout(() => {
   // Attribution personnalisée
   L.control.attribution({
     position: 'bottomleft',
-    prefix: "Les Jardins de l'EMS"
+    prefix: "Carte interactive RECOLTE"
   }).addTo(map);
   
 }, 1000);

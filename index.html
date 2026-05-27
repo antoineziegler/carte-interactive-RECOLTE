@@ -39,7 +39,7 @@
           <img src="assets/logo-recolte-vert.jpg" alt="Logo Récolte" class="header-logo">
           
           <!-- Titre -->
-          <h1> TITRE ? </h1>
+          <h1></h1>
         </div>
     
     <div class="header-controls">
@@ -47,6 +47,12 @@
       <button class="btn btn-secondary" id="sidebarToggle">
         <i data-lucide="panel-left"></i>
         Panneau
+      </button>
+
+      <!-- Bouton ressources -->
+      <button class="btn btn-secondary" id="ressourcesBtn">
+        <i data-lucide="book-open"></i>
+        Ressources
       </button>
 
       <!-- Bouton recherche -->
@@ -92,7 +98,7 @@
           <div class="stat-card">
             <span class="stat-number" id="totalArea">0</span>
             <div class="stat-text">
-              <span class="stat-label">Superficie (ha)</span>
+              <span class="stat-label">Superficie totale des jardins (ha)</span>
               <span class="stat-sublabel">soit 3% de la superficie de Strasbourg</span>
             </div>
           </div>
@@ -156,6 +162,53 @@
       </div>
     </div>
 
+    </div>
+
+    <!-- Sidebar ressources -->
+    <div id="sidebar-ressources" class="hidden" style="display:none;">
+      <div class="sidebar-section">
+        <h2 class="section-title">
+          <i data-lucide="book-open"></i>
+          Ressources
+        </h2>
+
+        <!-- Articles scientifiques -->
+        <div class="sidebar-section">
+          <h3 class="section-title">
+            <i data-lucide="file-text"></i>
+            Articles scientifiques
+          </h3>
+          <ul class="garden-list" id="liste-articles">
+            <li class="garden-item" style="display:flex; flex-direction:column; gap:0.25rem;">
+              <a href="https://zaeu-strasbourg.eu/wp-content/uploads/2026/02/N46-InSitu-Recoltes.pdf" target="_blank" style="font-weight:500; font-size:0.85rem; color:#16a34a;">Mieux connaître le système agricole territorial de l'Eurométropole de Strasbourg : simulation et comptabilité citoyenne</a>
+              <span style="font-size:0.75rem; color:var(--text-secondary); display:block; text-align:right; width:100%;">ZAEU  in Situ n°46  Février 2026</span>
+            </li>
+            <li class="garden-item" style="display:flex; flex-direction:column; gap:0.25rem;">
+              <a href="https://zaeu-strasbourg.eu/wp-content/uploads/2019/10/N9_Biodiv.pdf" target="_blank" style="font-weight:500; font-size:0.85rem; color:#16a34a;">Les jardins partagés strasbourgeois : des abris pour la biodiversité ?</a>
+              <span style="font-size:0.75rem; color:var(--text-secondary); display:block; text-align:right; width:100%;">ZAEU  in Situ n°9  Septembre 2019</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Références -->
+        <div class="sidebar-section">
+          <h3 class="section-title">
+            <i data-lucide="link"></i>
+            Références & liens utiles
+          </h3>
+          <ul class="garden-list" id="liste-liens">
+            <li class="garden-item" style="display:flex; flex-direction:column; gap:0.25rem;">
+              <a href="https://territoiresfertiles.fr/diagnostics/eurometropole-de-strasbourg" target="_blank" style="font-weight:500; font-size:0.85rem; color:#16a34a; text-decoration:none;">Diagnostic du système alimentaire : l'Eurométropole de Strasbourg</a>
+              <span style="font-size:0.75rem; color:var(--text-secondary); display:block; text-align:right; width:100%;">Territoires Fertiles</span>
+            </li>
+            <li class="garden-item" style="display:flex; flex-direction:column; gap:0.25rem;">
+              <a href="https://parcel-app.org/" target="_blank" style="font-weight:500; font-size:0.85rem; color:#16a34a; text-decoration:none;">PARCEL : simuler les empreintes aliemntaires et agricoles d'un territoire</a>
+              <span style="font-size:0.75rem; color:var(--text-secondary); display:block; text-align:right; width:100%;">Pour une alimentation résiliente, citoyenne et locale</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
     </div>
 
     <!-- Panneau stats jardin productif -->

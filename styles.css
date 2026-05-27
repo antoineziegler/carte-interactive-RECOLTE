@@ -256,6 +256,18 @@ h1 {
   border-right: none;
 }
 
+#sidebar-ressources {
+  width: 400px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: var(--shadow-medium);
+  flex-direction: column;
+}
+
 /* Scrollbar personnalisée */
 #sidebar::-webkit-scrollbar {
   width: 5px;
