@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Jardin_productif_Massif_Nourricier_Esplanade_2025",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "SURFACE": 312 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 7.769198583349831, 48.576549252220801 ], [ 7.769152716169816, 48.576320173128934 ], [ 7.768826081308124, 48.576348786566982 ], [ 7.769198583349831, 48.576549252220801 ] ] ] } }
+]
+}

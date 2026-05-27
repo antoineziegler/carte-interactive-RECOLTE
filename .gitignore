@@ -1,0 +1,23 @@
+# Fichiers temporaires Excel
+~$*
+
+
+
+# GeoJSON privés
+data/jardins_productifs/Jardin_productif_Dominique_2025.geojson
+data/jardins_productifs/Jardin_productif_Dominique_2025.qmd
+data/jardins_productifs/Jardin_productif_Céline&Ben_2025.geojson
+data/jardins_productifs/Jardin_productif_Céline&Ben_2025.qmd
+
+# Fichiers système Windows
+Thumbs.db
+desktop.ini
+.claude/
+
+# Fichiers système Mac
+.DS_Store
+
+# Dossier QGIS (non nécessaire pour le web)
+qgis/
+
+guide.md

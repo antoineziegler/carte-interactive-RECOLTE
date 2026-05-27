@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte interactive Récolte</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Librairies externes -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  
+  <!-- Police moderne Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icônes Lucide -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Chart.js pour les graphiques -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- EmailJS pour le formulaire de contact -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+</head>
+<body>
+  <!-- Effet de particules en arrière-plan -->
+  <div class="particles" id="particles"></div>
+
+<!-- Header modernisé avec contrôles -->
+  <header>
+        <div class="header-left">
+          <!-- Logo récolte à GAUCHE du titre -->
+          <img src="assets/logo-recolte-vert.jpg" alt="Logo Récolte" class="header-logo">
+          
+          <!-- Titre -->
+          <h1> TITRE ? </h1>
+        </div>
+    
+    <div class="header-controls">
+      <!-- Bouton toggle sidebar -->
+      <button class="btn btn-secondary" id="sidebarToggle">
+        <i data-lucide="panel-left"></i>
+        Panneau
+      </button>
+
+      <!-- Bouton recherche -->
+      <button class="btn btn-secondary" id="searchBtn">
+        <i data-lucide="search"></i>
+        Rechercher
+      </button>
+      
+
+      <!-- Bouton de formulaire de contact -->
+      <button class="btn btn-secondary" id="contactBtn">
+        <i data-lucide="mail"></i>
+        Participer ? 
+      </button>
+
+      <!-- Bouton d'exportation des données -->
+      <button class="btn btn-secondary" id="exportBtn">
+        <i data-lucide="download"></i>
+        Exporter 
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Layout principal -->
+  <div id="main">
+
+    <!-- Sidebar modernisée -->
+    <div id="sidebar">
+      <!-- Section statistiques générales -->
+      <div class="sidebar-section">
+        <h2 class="section-title">
+          <i data-lucide="bar-chart-3"></i>
+          Statistiques générales
+        </h2>
+        <div class="stats-container">
+          <div class="stat-card">
+            <span class="stat-number" id="totalGardens">0</span>
+            <div class="stat-text">
+              <span class="stat-label">Collectifs de jardins répertoriés</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="totalArea">0</span>
+            <div class="stat-text">
+              <span class="stat-label">Superficie (ha)</span>
+              <span class="stat-sublabel">soit 3% de la superficie de Strasbourg</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="barberTraps">0</span>
+            <div class="stat-text">
+              <span class="stat-label">Pièges Barber</span>
+              <span class="stat-sublabel">projet SolEnVille</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" id="avgYield">0</span>
+            <div class="stat-text">
+              <span class="stat-label">Rendement moyen (kg/m²)</span>
+              <span class="stat-sublabel">jardins productifs partenaires du projet Récolte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Section évolution -->
+      <div class="sidebar-section">
+        <h3 class="section-title">
+          <i data-lucide="trending-up"></i>
+          Évolution historique des jardins familiaux
+        </h3>
+        <ul id="liste-evolution" class="garden-list">
+          <!-- Liste générée dynamiquement -->
+        </ul>
+      </div>
+
+      <!-- Section jardins productifs -->
+      <div class="sidebar-section">
+        <h3 class="section-title">
+          <i data-lucide="sprout"></i>
+          Jardins productifs
+        </h3>
+        <ul id="liste-jardins-productifs" class="garden-list">
+          <!-- Liste générée dynamiquement -->
+        </ul>
+      </div>
+
+      <!-- Section filtre pièges Barber -->
+      <div class="sidebar-section">
+        <h3 class="section-title">
+          <i data-lucide="filter"></i>
+          Filtrer les pièges Barber
+        </h3>
+        <div id="filtre-pieges" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+      </div>
+
+    <!-- Panneau guildes -->
+    <div id="guildes-panel" class="stats-panel hidden" style="height: auto; max-height: 60vh;">
+      <div class="stats-panel-header">
+        <h3>Guildes trophiques par site</h3>
+        <button id="guildes-panel-close"><i data-lucide="x"></i></button>
+      </div>
+      <div id="guildes-panel-body" style="padding:1rem; overflow-y:auto;">
+        <canvas id="guildesChart"></canvas>
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Panneau stats jardin productif -->
+    <div id="stats-panel" class="stats-panel hidden">
+      <div class="stats-panel-header">
+        <h3 id="stats-panel-title">Stats</h3>
+        <button id="stats-panel-close"><i data-lucide="x"></i></button>
+      </div>
+      <div id="stats-panel-body"></div>
+    </div>
+
+    <!-- Panneau info couche (légende) -->
+    <div id="legend-info-panel" class="legend-info-panel hidden">
+      <div class="legend-info-header">
+        <span id="legend-info-icon"></span>
+        <h3 id="legend-info-title"></h3>
+        <button id="legend-info-close"><i data-lucide="x"></i></button>
+      </div>
+      <div id="legend-info-body"></div>
+    </div>
+
+    <!-- Bouton toggle légende -->
+    <button class="legend-toggle" id="legendToggle">
+      <i data-lucide="layers"></i>
+      Légende
+    </button>
+
+    <!-- Modal de recherche -->
+    <div id="search-modal" class="search-modal hidden">
+      <div class="search-modal-inner">
+        <div class="search-input-row">
+          <i data-lucide="search"></i>
+          <input type="text" id="search-input" placeholder="Rechercher un jardin ou une adresse..." autocomplete="off" />
+          <button id="search-close"><i data-lucide="x"></i></button>
+        </div>
+        <div id="search-results"></div>
+      </div>
+    </div>
+
+    <!-- Lightbox image -->
+    <div id="lightbox" class="lightbox hidden">
+      <img id="lightbox-img" src="" alt="" />
+    </div>
+
+    <!-- Carte principale -->
+    <div id="map">
+      <!-- Overlay de chargement -->
+      <div class="map-loading" id="mapLoading">
+        <div style="text-align: center;">
+          <div class="loading-spinner"></div>
+          <p style="margin-top: 1rem; color: var(--text-secondary);">Chargement de la carte...</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal tutoriel modernisé -->
+
+    <script src="scripts.js"></script> 
+    
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Jardin_productif_Fridolin_2025",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 185, "NOM": "JARDIN FRIDOLIN", "TPE_ENTITE": "jardin_familial", "SOURCE": "Ville et eurométropole de Strasbourg", "DATE_EXPRT": "01/04/2026", "LICENCE": "licence ouverte etalab v2", "SUPERFICIE M2": 968.54758485918865 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.700002300286437, 48.578530010156641 ], [ 7.699976656558813, 48.578696832776487 ], [ 7.699979855039112, 48.578724946467801 ], [ 7.699989677003783, 48.578740884440435 ], [ 7.700000797469656, 48.578749835636671 ], [ 7.700131478236221, 48.578693910563956 ], [ 7.700173743868765, 48.578306665525133 ], [ 7.699799826290764, 48.578281977671622 ], [ 7.699764179272763, 48.578518621781448 ], [ 7.700002300286437, 48.578530010156641 ] ] ] ] } }
+]
+}

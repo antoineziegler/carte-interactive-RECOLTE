@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Jardin_productif_Le_Chou_De_Bruxelles",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "SUPERFICIE M2": 686 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 7.778520855188675, 48.583151511951073 ], [ 7.778441126465292, 48.582986507929192 ], [ 7.777975920336201, 48.583092478315962 ], [ 7.778062597893276, 48.583252522211822 ], [ 7.778520855188675, 48.583151511951073 ] ] ] } }
+]
+}

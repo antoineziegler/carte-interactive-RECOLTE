@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "Initiatives_jardinesques",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "1", "name": "Jardin en permaculture - Orée85", "description": "L'Orée 85, numéro de l'Ecluse qui porte le même numéro, tiers-lieu participatif ", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.734732, 48.568917 ] } },
+{ "type": "Feature", "properties": { "id": "2", "name": "Jardin merveilleux | jardin du Schoessel", "description": "Jardin pédagogique et démonstatif", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.71461506981599, 48.576374987058578 ] } },
+{ "type": "Feature", "properties": { "id": "3", "name": "Jardin partagé | (projet)", "description": "Allée de l'abbé de l'épée, Strasbourg/Meinau", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.763311, 48.545869 ] } },
+{ "type": "Feature", "properties": { "id": "4", "name": "L'ïlôt sauvage | (projet)", "description": "Un projet de forêt-jardin collaboratif, Rue de la VIIIème légion, Strasbourg/Koenigshoffen", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.702428821487332, 48.577699343364536 ] } },
+{ "type": "Feature", "properties": { "id": "5", "name": "Pieds d'arbres jardinés/ Envie de quartier", "description": "Rues des Faubourg de Pierre, Saverne, quai Saint-Jean", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.745498, 48.588887 ] } },
+{ "type": "Feature", "properties": { "id": "6", "name": "Site de compostage | cité Spach", "description": "Compostra", "Superficie(m²)": null }, "geometry": { "type": "Point", "coordinates": [ 7.772665, 48.581374 ] } }
+]
+}

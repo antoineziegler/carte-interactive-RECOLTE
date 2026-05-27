@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"name": "production_agricole_professionnelle",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": "1", "name": "Andrès Maraîcher", "description": "Ferme urbaine définitivement fermée ", "Superficie(m²)": 45000.0 }, "geometry": { "type": "Point", "coordinates": [ 7.794296, 48.596474 ] } },
+{ "type": "Feature", "properties": { "id": "3", "name": "Ferme éducative de la Ganzau", "description": null, "Superficie(m²)": 50000.0 }, "geometry": { "type": "Point", "coordinates": [ 7.763798077155497, 48.524669855649954 ] } },
+{ "type": "Feature", "properties": { "id": "11", "name": "Jardins de la Montagne Verte", "description": "Association d'insertion par l'emploi avec serres de production maraîchère, jardin aromatique, une boutique de vente primeurs et d'autres activités", "Superficie(m²)": 4950.0 }, "geometry": { "type": "Point", "coordinates": [ 7.721972, 48.579308 ] } },
+{ "type": "Feature", "properties": { "id": "14", "name": "L'îlot de la Meinau", "description": "Ferme urbaine, exploitation maraîchère de produits de saisons et en circuit court", "Superficie(m²)": 110000.0 }, "geometry": { "type": "Point", "coordinates": [ 7.743189072979923, 48.564392679200985 ] } },
+{ "type": "Feature", "properties": { "id": "12", "name": "Jardins de la Montagne Verte", "description": "Association d'insertion par l'emploi avec serres de production maraîchère, jardin aromatique, une boutique de vente primeurs et d'autres activités", "Superficie(m²)": 1536.0 }, "geometry": { "type": "Point", "coordinates": [ 7.745111837191142, 48.613152908250441 ] } },
+{ "type": "Feature", "properties": { "id": null, "name": "Le Jardin de Marthe", "description": "Ferme urbaine, exploitation maraîchère de produits Bio et de saisons", "Superficie(m²)": 44600.0 }, "geometry": { "type": "Point", "coordinates": [ 7.784611414306663, 48.594404593082118 ] } },
+{ "type": "Feature", "properties": { "id": "", "name": "Jardins de la Montagne Verte", "description": null, "Superficie(m²)": 32000.0 }, "geometry": { "type": "Point", "coordinates": [ 7.636249178397732, 48.551371089634415 ] } }
+]
+}
