@@ -889,7 +889,7 @@ function updateLayerControl() {
   }
 
   const fondsCarte = {
-    "🗺️ Standard": osm,
+    "🗺️ OpenStreetMap": osm,
     "🛰️ Satellite": satellite,
     "🗺️ CartoDB": cartoDB
   };
@@ -2179,11 +2179,22 @@ async function chargerGuildes() {
 function afficherGuildesChart(siteNom) {
   if (!piegesBarberDataGlobal || Object.keys(guildesMapping).length === 0) return;
 
-  // Faire défiler la sidebar jusqu'à la section pièges Barber
+  // Ouvrir la sidebar si elle est fermée
   const sidebar = document.getElementById('sidebar');
+  if (sidebar.classList.contains('collapsed')) {
+    sidebarOpen = true;
+    sidebar.classList.remove('collapsed');
+  }
+
+  // Fermer la sidebar ressources si ouverte
+  const ressources = document.getElementById('sidebar-ressources');
+  ressources.style.display = 'none';
+  ressources.classList.add('hidden');
+
+  // Faire défiler la sidebar jusqu'à la section pièges Barber
   const section = document.getElementById('filtre-pieges').closest('.sidebar-section');
   if (sidebar && section) {
-    sidebar.scrollTo({ top: section.offsetTop - 32, behavior: 'smooth' });
+    setTimeout(() => sidebar.scrollTo({ top: section.offsetTop - 32, behavior: 'smooth' }), 320);
   }
 
   const panel = document.getElementById('guildes-panel');
