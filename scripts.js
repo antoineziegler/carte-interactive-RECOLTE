@@ -50,7 +50,7 @@ const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servi
 
 const cartoDB = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
   maxZoom: 22, 
-  attribution: '© CartoDB',
+  attribution: '© CartoDB | <a href="https://leafletjs.com">Leaflet</a>',
   updateWhenIdle: false
 }).addTo(map);
 
@@ -122,7 +122,7 @@ const piegesBarber = L.geoJSON(null, {
     layer.bindPopup(popupContent, { className: 'custom-popup', autoPan: false, maxWidth: 300 });
 
     layer.on('popupopen', function() {
-      afficherGuildesChart(props.site_nom || 'Inconnu');
+      afficherGuildesChart(props.site_nom || 'Inconnu', props);
       const canvas = document.getElementById(chartId);
       if (!canvas) return;
 
@@ -2176,7 +2176,7 @@ async function chargerGuildes() {
   }
 }
 
-function afficherGuildesChart(siteNom) {
+function afficherGuildesChart(siteNom, piegeProps) {
   if (!piegesBarberDataGlobal || Object.keys(guildesMapping).length === 0) return;
 
   // Ouvrir la sidebar si elle est fermée
@@ -2206,14 +2206,13 @@ function afficherGuildesChart(siteNom) {
   const guildes = ['Prédateur', 'Détritivore', 'Omnivore', 'Phytophage'];
 
   const totaux = {};
-  piegesBarberDataGlobal.features
-    .filter(f => (f.properties.site_nom || 'Inconnu') === siteNom)
-    .forEach(f => {
-      Object.keys(guildesMapping).forEach(espece => {
-        const guilde = guildesMapping[espece];
-        totaux[guilde] = (totaux[guilde] || 0) + (f.properties[espece] || 0);
-      });
+  const source = piegeProps ? [{ properties: piegeProps }] : piegesBarberDataGlobal.features.filter(f => (f.properties.site_nom || 'Inconnu') === siteNom);
+  source.forEach(f => {
+    Object.keys(guildesMapping).forEach(espece => {
+      const guilde = guildesMapping[espece];
+      totaux[guilde] = (totaux[guilde] || 0) + (f.properties[espece] || 0);
     });
+  });
 
   const labels = guildes.filter(g => totaux[g] > 0);
   const data = labels.map(g => totaux[g]);
@@ -2274,6 +2273,7 @@ function createLegend() {
           </h4>
           
           
+          <!-- 1. Évolution historique jardins familiaux -->
           <div class="legend-section">
             <strong class="legend-item clickable" data-info="jardins-familiaux">Évolution historique</strong>
             <div class="legend-item clickable" data-info="jardins-familiaux">
@@ -2290,70 +2290,71 @@ function createLegend() {
             </div>
           </div>
 
+          <!-- 2. Jardins partagés -->
           <div class="legend-section">
-            <strong class="legend-item clickable" data-info="pieges-barber">🪲 Entomologie</strong>
-            <div class="legend-item clickable" data-info="pieges-barber">
-              <div class="legend-symbol circle" style="background-color: #7c3aed; border: 2px solid #4c1d95;"></div>
-              <span class="legend-text">Pièges Barber (invertébrés)</span>
-            </div>
-          </div>
-
-          <div class="legend-section">
-            <strong class="legend-item clickable" data-info="puc">🥦 Potagers Urbains Collectifs</strong>
-            <div class="legend-item clickable" data-info="puc">
-              <div class="legend-symbol" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e;"></div>
-              <span class="legend-text">Potager Urbain Collectif (PUC)</span>
-            </div>
-          </div>
-
-          <div class="legend-section">
-            <strong class="legend-item clickable" data-info="jardins-partages">🌱 Jardins partagés</strong>
             <div class="legend-item clickable" data-info="jardins-partages">
-              <div class="legend-symbol" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a;"></div>
-              <span class="legend-text">Jardins partagés</span>
+              <strong><span style="margin-right: 0 rem;">🌱 </span>Jardins partagés</strong>
+              <div class="legend-symbol" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
+          <!-- 3. Potagers Urbains Collectifs -->
           <div class="legend-section">
-            <strong class="legend-item clickable" data-info="cites-fertiles">🌸 Cités Fertiles</strong>
-            <div class="legend-item clickable" data-info="cites-fertiles">
-              <div class="legend-symbol" style="background-color: #f9a8d4; opacity: 0.6; border: 2px solid #ec4899;"></div>
-              <span class="legend-text">Cité Fertile</span>
+            <div class="legend-item clickable" data-info="puc">
+              <strong><span style="margin-right: 0 rem;">🥦 </span>Potagers Urbains Collectifs</strong>
+              <div class="legend-symbol" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
+          <!-- 4. Massifs nourriciers -->
           <div class="legend-section">
-            <strong class="legend-item clickable" data-info="massifs-nourriciers">🫐 Massifs nourriciers</strong>
             <div class="legend-item clickable" data-info="massifs-nourriciers">
-              <div class="legend-symbol" style="background-color: #a78bfa; opacity: 0.6; border: 2px solid #7c3aed;"></div>
-              <span class="legend-text">Massif nourricier</span>
+              <strong><span style="margin-right: 0 rem;">🫐 </span>Massifs nourriciers</strong>
+              <div class="legend-symbol" style="background-color: #a78bfa; opacity: 0.45; border: 2px solid #7c3aed; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
+          <!-- 5. Cités Fertiles -->
           <div class="legend-section">
-            <strong class="legend-item clickable" data-info="production-agricole">🌾 Production agricole</strong>
-            <div class="legend-item clickable" data-info="production-agricole">
-              <div class="legend-symbol circle" style="background-color: #e4e131; border: 2px solid #109927;"></div>
-              <span class="legend-text">Production agricole professionnelle</span>
+            <div class="legend-item clickable" data-info="cites-fertiles">
+              <strong><span style="margin-right: 0 rem;">🌸 </span>Cités Fertiles</strong>
+              <div class="legend-symbol" style="background-color: #f9a8d4; opacity: 0.45; border: 2px solid #ec4899; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
+          <!-- 6. Jardins productifs -->
           <div class="legend-section">
-            <strong class="legend-item clickable" data-info="initiatives-jardinesques">🌻 Initiatives jardinesques</strong>
-            <div class="legend-item clickable" data-info="initiatives-jardinesques">
-              <div class="legend-symbol circle" style="background-color: #fbbf24; border: 2px solid #d97706;"></div>
-              <span class="legend-text">Initiatives jardinesques</span>
-            </div>
-          </div>
-
-          <div class="legend-section">
-            <strong class="legend-item clickable" data-info="jardins-productifs">🌿 Jardins productifs</strong>
             <div class="legend-item clickable" data-info="jardins-productifs">
-              <div class="legend-symbol" style="background-color: #f97316; opacity: 0.6; border: 2px solid #ea580c;"></div>
-              <span class="legend-text">Jardin productif (2025)</span>
+              <strong><span style="margin-right: 0 rem;">🌿 </span>Jardins productifs</strong>
+              <div class="legend-symbol" style="background-color: #f97316; opacity: 0.45; border: 2px solid #ea580c; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
+          <!-- 7. Pièges Barber -->
+          <div class="legend-section">
+            <div class="legend-item clickable" data-info="pieges-barber">
+              <strong><span style="margin-right: 0 rem;">🪲 </span>Pièges Barber (invertébrés)</strong>
+              <div class="legend-symbol circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95; margin-left: 0.55rem;"></div>
+            </div>
+          </div>
+
+          <!-- 8. Production agricole -->
+          <div class="legend-section">
+            <div class="legend-item clickable" data-info="production-agricole">
+              <strong><span style="margin-right: 0 rem;">🌾 </span>Production agricole</strong>
+              <div class="legend-symbol circle" style="background-color: #e4e131; border: 2px solid #109927; margin-left: 0.55rem;"></div>
+            </div>
+          </div>
+
+          <!-- 9. Initiatives jardinesques -->
+          <div class="legend-section">
+            <div class="legend-item clickable" data-info="initiatives-jardinesques">
+              <strong><span style="margin-right: 0 rem;">🌻 </span>Initiatives jardinesques</strong>
+              <div class="legend-symbol circle" style="background-color: #fbbf24; border: 2px solid #d97706; margin-left: 0.55rem;"></div>
+            </div>
+          </div>
+
+          <!-- 10. Autres couches -->
           <div class="legend-section">
             <strong class="legend-item clickable" data-info="limites-ems">🏛️ Autres couches</strong>
             <div class="legend-item clickable" data-info="limites-ems">
