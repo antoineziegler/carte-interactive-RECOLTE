@@ -847,9 +847,12 @@ function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   const ressources = document.getElementById('sidebar-ressources');
 
-  // Fermer les ressources si ouvertes
+  // Fermer les ressources et projection si ouvertes
   ressources.style.display = 'none';
   ressources.classList.add('hidden');
+  const projection = document.getElementById('sidebar-projection');
+  projection.style.display = 'none';
+  projection.classList.add('hidden');
 
   sidebarOpen = !sidebarOpen;
   sidebar.classList.toggle('collapsed');
@@ -859,19 +862,46 @@ function toggleSidebar() {
 function toggleRessources() {
   const sidebar = document.getElementById('sidebar');
   const ressources = document.getElementById('sidebar-ressources');
+  const projection = document.getElementById('sidebar-projection');
   const isOpen = ressources.style.display === 'flex';
+
+  projection.style.display = 'none';
+  projection.classList.add('hidden');
 
   if (isOpen) {
     ressources.style.display = 'none';
     ressources.classList.add('hidden');
   } else {
-    // Fermer la sidebar principale si ouverte
     if (!sidebar.classList.contains('collapsed')) {
       sidebarOpen = false;
       sidebar.classList.add('collapsed');
     }
     ressources.style.display = 'flex';
     ressources.classList.remove('hidden');
+    lucide.createIcons();
+  }
+  setTimeout(() => map.invalidateSize(), 320);
+}
+
+function toggleProjection() {
+  const sidebar = document.getElementById('sidebar');
+  const ressources = document.getElementById('sidebar-ressources');
+  const projection = document.getElementById('sidebar-projection');
+  const isOpen = projection.style.display === 'flex';
+
+  ressources.style.display = 'none';
+  ressources.classList.add('hidden');
+
+  if (isOpen) {
+    projection.style.display = 'none';
+    projection.classList.add('hidden');
+  } else {
+    if (!sidebar.classList.contains('collapsed')) {
+      sidebarOpen = false;
+      sidebar.classList.add('collapsed');
+    }
+    projection.style.display = 'flex';
+    projection.classList.remove('hidden');
     lucide.createIcons();
   }
   setTimeout(() => map.invalidateSize(), 320);
@@ -1331,6 +1361,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Gestionnaires optimisés
   document.getElementById('sidebarToggle').addEventListener('click', debouncedHandlers.sidebar);
+  document.getElementById('projectionBtn').addEventListener('click', toggleProjection);
   document.getElementById('ressourcesBtn').addEventListener('click', toggleRessources);
   document.getElementById('searchBtn').addEventListener('click', debouncedHandlers.search);
   document.getElementById('contactBtn').addEventListener('click', debouncedHandlers.contact);
