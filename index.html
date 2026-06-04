@@ -158,12 +158,12 @@
       </div>
 
     <!-- Panneau guildes -->
-    <div id="guildes-panel" class="stats-panel hidden" style="height: auto; max-height: 60vh;">
-      <div class="stats-panel-header">
+    <div id="panneau-guildes" class="panneau-stats hidden" style="height: auto; max-height: 60vh;">
+      <div class="entete-panneau-stats">
         <h3>Guildes trophiques par site</h3>
-        <button id="guildes-panel-close"><i data-lucide="x"></i></button>
+        <button id="panneau-guildes-fermer"><i data-lucide="x"></i></button>
       </div>
-      <div id="guildes-panel-body" style="padding:1rem; overflow-y:auto;">
+      <div id="panneau-guildes-corps" style="padding:1rem; overflow-y:auto;">
         <canvas id="guildesChart"></canvas>
       </div>
     </div>
@@ -229,39 +229,39 @@
     </div>
 
     <!-- Panneau stats jardin productif -->
-    <div id="stats-panel" class="stats-panel hidden">
-      <div class="stats-panel-header">
-        <h3 id="stats-panel-title">Stats</h3>
-        <button id="stats-panel-close"><i data-lucide="x"></i></button>
+    <div id="panneau-stats" class="panneau-stats hidden">
+      <div class="entete-panneau-stats">
+        <h3 id="panneau-stats-titre">Stats</h3>
+        <button id="panneau-stats-fermer"><i data-lucide="x"></i></button>
       </div>
-      <div id="stats-panel-body"></div>
+      <div id="panneau-stats-corps"></div>
     </div>
 
     <!-- Panneau info couche (légende) -->
-    <div id="legend-info-panel" class="legend-info-panel hidden">
-      <div class="legend-info-header">
-        <span id="legend-info-icon"></span>
-        <h3 id="legend-info-title"></h3>
-        <button id="legend-info-close"><i data-lucide="x"></i></button>
+    <div id="panneau-legende-info" class="panneau-info-legende hidden">
+      <div class="entete-info-legende">
+        <span id="legende-info-icone"></span>
+        <h3 id="panneau-legende-titre"></h3>
+        <button id="panneau-legende-fermer"><i data-lucide="x"></i></button>
       </div>
-      <div id="legend-info-body"></div>
+      <div id="panneau-legende-corps"></div>
     </div>
 
     <!-- Bouton toggle légende -->
-    <button class="legend-toggle" id="legendToggle">
+    <button class="bascule-legende" id="basculeLegende">
       <i data-lucide="layers"></i>
       Légende
     </button>
 
     <!-- Modal de recherche -->
-    <div id="search-modal" class="search-modal hidden">
-      <div class="search-modal-inner">
-        <div class="search-input-row">
+    <div id="modal-recherche" class="modal-recherche hidden">
+      <div class="modal-recherche-interieur">
+        <div class="ligne-saisie-recherche">
           <i data-lucide="search"></i>
-          <input type="text" id="search-input" placeholder="Rechercher un jardin ou une adresse..." autocomplete="off" />
-          <button id="search-close"><i data-lucide="x"></i></button>
+          <input type="text" id="champ-recherche" placeholder="Rechercher un jardin ou une adresse..." autocomplete="off" />
+          <button id="recherche-fermer"><i data-lucide="x"></i></button>
         </div>
-        <div id="search-results"></div>
+        <div id="resultats-recherche"></div>
       </div>
     </div>
 
@@ -273,9 +273,9 @@
     <!-- Carte principale -->
     <div id="map">
       <!-- Overlay de chargement -->
-      <div class="map-loading" id="mapLoading">
+      <div class="chargement-carte" id="chargementCarte">
         <div style="text-align: center;">
-          <div class="loading-spinner"></div>
+          <div class="spinner-chargement"></div>
           <p style="margin-top: 1rem; color: var(--text-secondary);">Chargement de la carte...</p>
         </div>
       </div>

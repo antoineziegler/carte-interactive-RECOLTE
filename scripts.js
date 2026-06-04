@@ -12,7 +12,7 @@ const layersHistoriques = {};
 const statsEvol = {};
 
 // Variables pour l'état de l'application
-let sidebarOpen = true;
+let panneauOuvert = true;
 let currentFilter = 'all';
 let isDataLoaded = false;
 let loadingProgress = 0;
@@ -122,7 +122,7 @@ const piegesBarber = L.geoJSON(null, {
     layer.bindPopup(popupContent, { className: 'custom-popup', autoPan: false, maxWidth: 300 });
 
     layer.on('popupopen', function() {
-      afficherGuildesChart(props.site_nom || 'Inconnu', props);
+      afficherGraphiqueGuildes(props.site_nom || 'Inconnu', props);
       const canvas = document.getElementById(chartId);
       if (!canvas) return;
 
@@ -633,9 +633,9 @@ function populerListeJardinsProductifs() {
 }
 
 async function afficherStatsJardinProductif(nom, superficie, anneeSelectionnee = null) {
-  const panel = document.getElementById('stats-panel');
-  const title = document.getElementById('stats-panel-title');
-  const body = document.getElementById('stats-panel-body');
+  const panel = document.getElementById('panneau-stats');
+  const title = document.getElementById('panneau-stats-titre');
+  const body = document.getElementById('panneau-stats-corps');
 
   const meta = statsJardinsProductifs[nom];
 
@@ -727,7 +727,7 @@ async function afficherStatsJardinProductif(nom, superficie, anneeSelectionnee =
 }
 
 // Variable pour le contrôleur de couches
-let layerControl;
+let controleCouches;
 
 /* ===== FONCTIONS UTILITAIRES OPTIMISÉES ===== */
 
@@ -737,11 +737,11 @@ function updateLoadingProgress(processed, total, elapsed) {
   const progress = Math.round((processed / total) * 100);
   if (progress !== loadingProgress) {
     loadingProgress = progress;
-    const loadingElement = document.getElementById('mapLoading');
+    const loadingElement = document.getElementById('chargementCarte');
     if (loadingElement) {
       loadingElement.innerHTML = `
         <div style="text-align: center;">
-          <div class="loading-spinner"></div>
+          <div class="spinner-chargement"></div>
           <p style="margin-top: 1rem; color: var(--text-secondary);">
             Chargement de la carte... ${progress}%
           </p>
@@ -782,7 +782,7 @@ let statsCache = null;
 let totalJardinsGlobal = null;
 let totalSuperficieGlobal = null;
 
-async function loadTotalJardins() {
+async function chargerTotalJardins() {
   try {
     const response = await fetch('data/stats_jardin_globale/SURFACE_TOTALE_ET_NOMBRE_JARDINS.xlsx');
     const buffer = await response.arrayBuffer();
@@ -843,7 +843,7 @@ function updateStats() {
 }
 
 
-function toggleSidebar() {
+function basculerPanneau() {
   const sidebar = document.getElementById('sidebar');
   const ressources = document.getElementById('sidebar-ressources');
 
@@ -854,12 +854,12 @@ function toggleSidebar() {
   projection.style.display = 'none';
   projection.classList.add('hidden');
 
-  sidebarOpen = !sidebarOpen;
+  panneauOuvert = !panneauOuvert;
   sidebar.classList.toggle('collapsed');
   setTimeout(() => map.invalidateSize(), 320);
 }
 
-function toggleRessources() {
+function basculerRessources() {
   const sidebar = document.getElementById('sidebar');
   const ressources = document.getElementById('sidebar-ressources');
   const projection = document.getElementById('sidebar-projection');
@@ -873,7 +873,7 @@ function toggleRessources() {
     ressources.classList.add('hidden');
   } else {
     if (!sidebar.classList.contains('collapsed')) {
-      sidebarOpen = false;
+      panneauOuvert = false;
       sidebar.classList.add('collapsed');
     }
     ressources.style.display = 'flex';
@@ -883,7 +883,7 @@ function toggleRessources() {
   setTimeout(() => map.invalidateSize(), 320);
 }
 
-function toggleProjection() {
+function basculerProjection() {
   const sidebar = document.getElementById('sidebar');
   const ressources = document.getElementById('sidebar-ressources');
   const projection = document.getElementById('sidebar-projection');
@@ -897,7 +897,7 @@ function toggleProjection() {
     projection.classList.add('hidden');
   } else {
     if (!sidebar.classList.contains('collapsed')) {
-      sidebarOpen = false;
+      panneauOuvert = false;
       sidebar.classList.add('collapsed');
     }
     projection.style.display = 'flex';
@@ -913,9 +913,9 @@ const dataCache = new Map();
 
 /* ===== GESTION OPTIMISÉE DES COUCHES ===== */
 
-function updateLayerControl() {
-  if (layerControl) {
-    map.removeControl(layerControl);
+function mettreAjourCouches() {
+  if (controleCouches) {
+    map.removeControl(controleCouches);
   }
 
   const fondsCarte = {
@@ -940,11 +940,11 @@ function updateLayerControl() {
     couchesAffichage[`🏡 Jardins familiaux ${annee}`] = couche;
   });
 
-  layerControl = L.control.layers(fondsCarte, couchesAffichage, {
+  controleCouches = L.control.layers(fondsCarte, couchesAffichage, {
     collapsed: false,
     position: 'topright'
   });
-  layerControl.addTo(map);
+  controleCouches.addTo(map);
 }
 
 
@@ -1005,14 +1005,14 @@ async function loadAllData() {
     // Traiter les limites EMS
     if (limitesData) {
       limitesEMS.addData(limitesData);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     updateLoadingProgress(60, 100, 0);
 
     // Traiter les pièges Barber
     if (piegesBarberData) {
-      piegesBarberDataGlobal = piegesBarberData;
+      donneesPiegesBarber = piegesBarberData;
       piegesBarber.addData(piegesBarberData);
       piegesCluster = L.markerClusterGroup({
         maxClusterRadius: 60,
@@ -1029,7 +1029,7 @@ async function loadAllData() {
       });
       piegesCluster.addLayer(piegesBarber);
       piegesCluster.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
 
       // Générer les boutons de filtre par année
       const anneesPieges = [...new Set(
@@ -1086,42 +1086,42 @@ async function loadAllData() {
     if (pucData) {
       puc.addData(pucData);
       puc.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter les Cités Fertiles
     if (citesFertilesData) {
       citesFertiles.addData(citesFertilesData);
       citesFertiles.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter la production agricole professionnelle
     if (productionAgricoleData) {
       productionAgricole.addData(productionAgricoleData);
       productionAgricole.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter les massifs nourriciers
     if (massifsData) {
       massifsNourriciers.addData(massifsData);
       massifsNourriciers.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter les initiatives émergentes
     if (initiativesData) {
       initiativesEmergentes.addData(initiativesData);
       initiativesEmergentes.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter les jardins partagés
     if (jardinsPartagesData) {
       jardinsPartages.addData(jardinsPartagesData);
       jardinsPartages.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
     }
 
     // Traiter les jardins productifs
@@ -1164,7 +1164,7 @@ async function loadAllData() {
     }
     if (fridolinData || lombricData || landsbergData || chouData || massifData || hohbergData) {
       jardinsProductifs.addTo(map);
-      updateLayerControl();
+      mettreAjourCouches();
       populerListeJardinsProductifs();
     }
 
@@ -1177,13 +1177,13 @@ async function loadAllData() {
     
     // Finaliser le chargement
     setTimeout(() => {
-      const loadingOverlay = document.getElementById('mapLoading');
+      const loadingOverlay = document.getElementById('chargementCarte');
       if (loadingOverlay) {
         loadingOverlay.style.opacity = '0';
         setTimeout(async () => {
           loadingOverlay.style.display = 'none';
           isDataLoaded = true;
-          await loadTotalJardins();
+          await chargerTotalJardins();
           statsCache = null;
           updateStats();
         }, 500);
@@ -1293,7 +1293,7 @@ async function loadHistoricalData() {
   await Promise.all(historicalPromises);
   
   // Finaliser les données historiques
-  updateLayerControl();
+  mettreAjourCouches();
   afficherEvolutionJardins();
   
   // Initialiser les icônes après un délai
@@ -1353,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialiser les gestionnaires avec debouncing
   const debouncedHandlers = {
-    sidebar: debounce(toggleSidebar, 300),
+    sidebar: debounce(basculerPanneau, 300),
     search: debounce(showSearchModal, 300),
     contact: debounce(showContactForm, 300),
     export: debounce(exportGardenData, 1000)
@@ -1361,33 +1361,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Gestionnaires optimisés
   document.getElementById('sidebarToggle').addEventListener('click', debouncedHandlers.sidebar);
-  document.getElementById('projectionBtn').addEventListener('click', toggleProjection);
-  document.getElementById('ressourcesBtn').addEventListener('click', toggleRessources);
+  document.getElementById('projectionBtn').addEventListener('click', basculerProjection);
+  document.getElementById('ressourcesBtn').addEventListener('click', basculerRessources);
   document.getElementById('searchBtn').addEventListener('click', debouncedHandlers.search);
   document.getElementById('contactBtn').addEventListener('click', debouncedHandlers.contact);
   document.getElementById('exportBtn').addEventListener('click', debouncedHandlers.export);
 
   // Recherche
-  document.getElementById('search-close').addEventListener('click', fermerRecherche);
-  document.getElementById('search-input').addEventListener('input', function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => lancerRecherche(this.value), 300);
+  document.getElementById('recherche-fermer').addEventListener('click', fermerRecherche);
+  document.getElementById('champ-recherche').addEventListener('input', function() {
+    clearTimeout(timerRecherche);
+    timerRecherche = setTimeout(() => lancerRecherche(this.value), 300);
   });
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') fermerRecherche();
   });
 
   // Fermeture du panneau stats
-  document.getElementById('stats-panel-close').addEventListener('click', function() {
-    document.getElementById('stats-panel').classList.add('hidden');
+  document.getElementById('panneau-stats-fermer').addEventListener('click', function() {
+    document.getElementById('panneau-stats').classList.add('hidden');
     setTimeout(() => map.invalidateSize(), 320);
   });
 
   // Bouton toggle légende
-  document.getElementById('legendToggle').addEventListener('click', function() {
-    const panel = document.querySelector('.legend');
+  document.getElementById('basculeLegende').addEventListener('click', function() {
+    const panel = document.querySelector('.legende');
     if (panel) {
-      panel.classList.toggle('legend-hidden');
+      panel.classList.toggle('legende-cachee');
     }
   });
 
@@ -1410,8 +1410,8 @@ document.addEventListener('DOMContentLoaded', function() {
   chargerGuildes();
 
   // Bouton guildes
-  document.getElementById('guildes-panel-close').addEventListener('click', () => {
-    document.getElementById('guildes-panel').classList.add('hidden');
+  document.getElementById('panneau-guildes-fermer').addEventListener('click', () => {
+    document.getElementById('panneau-guildes').classList.add('hidden');
     setTimeout(() => map.invalidateSize(), 320);
   });
 });
@@ -1433,15 +1433,15 @@ function debounce(func, wait) {
 /* ===== FONCTIONS SIMPLIFIÉES POUR LES MODALS ===== */
 
 function showSearchModal() {
-  const modal = document.getElementById('search-modal');
+  const modal = document.getElementById('modal-recherche');
   modal.classList.remove('hidden');
-  document.getElementById('search-input').focus();
+  document.getElementById('champ-recherche').focus();
 }
 
 function fermerRecherche() {
-  document.getElementById('search-modal').classList.add('hidden');
-  document.getElementById('search-input').value = '';
-  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('modal-recherche').classList.add('hidden');
+  document.getElementById('champ-recherche').value = '';
+  document.getElementById('resultats-recherche').innerHTML = '';
 }
 
 function rechercherJardins(query) {
@@ -1598,15 +1598,15 @@ function rechercherJardins(query) {
   return resultats;
 }
 
-let searchTimeout = null;
+let timerRecherche = null;
 async function lancerRecherche(query) {
-  const resultsDiv = document.getElementById('search-results');
+  const resultsDiv = document.getElementById('resultats-recherche');
   if (!query || query.trim().length < 2) {
     resultsDiv.innerHTML = '';
     return;
   }
 
-  resultsDiv.innerHTML = '<div class="search-empty">Recherche...</div>';
+  resultsDiv.innerHTML = '<div class="recherche-vide">Recherche...</div>';
 
   const jardins = rechercherJardins(query);
 
@@ -1627,35 +1627,35 @@ async function lancerRecherche(query) {
   let html = '';
 
   if (jardins.length > 0) {
-    html += '<div class="search-section-title">Jardins</div>';
+    html += '<div class="titre-section-recherche">Jardins</div>';
     jardins.forEach(r => {
       html += `
-        <div class="search-result-item" data-idx="${jardins.indexOf(r)}" data-type="jardin">
-          <div class="search-result-icon" style="background: ${r.couleur}22;">${r.icone}</div>
+        <div class="element-resultat-recherche" data-idx="${jardins.indexOf(r)}" data-type="jardin">
+          <div class="icone-resultat-recherche" style="background: ${r.couleur}22;">${r.icone}</div>
           <div>
-            <div class="search-result-text">${r.label}</div>
-            <div class="search-result-sub">${r.sub}</div>
+            <div class="texte-resultat-recherche">${r.label}</div>
+            <div class="sous-texte-resultat">${r.sub}</div>
           </div>
         </div>`;
     });
   }
 
   if (adresses.length > 0) {
-    html += '<div class="search-section-title">Adresses</div>';
+    html += '<div class="titre-section-recherche">Adresses</div>';
     adresses.forEach((a, i) => {
       html += `
-        <div class="search-result-item" data-idx="${i}" data-type="adresse">
-          <div class="search-result-icon" style="background: #6b728022;">📍</div>
+        <div class="element-resultat-recherche" data-idx="${i}" data-type="adresse">
+          <div class="icone-resultat-recherche" style="background: #6b728022;">📍</div>
           <div>
-            <div class="search-result-text">${a.label}</div>
-            <div class="search-result-sub">${a.sub}</div>
+            <div class="texte-resultat-recherche">${a.label}</div>
+            <div class="sous-texte-resultat">${a.sub}</div>
           </div>
         </div>`;
     });
   }
 
   if (!html) {
-    html = '<div class="search-empty">Aucun résultat trouvé.</div>';
+    html = '<div class="recherche-vide">Aucun résultat trouvé.</div>';
   }
 
   resultsDiv.innerHTML = html;
@@ -2138,32 +2138,32 @@ function ouvrirPanneauLegende(cle) {
   const info = legendeInfos[cle];
   if (!info) return;
 
-  const panel = document.getElementById('legend-info-panel');
-  document.getElementById('legend-info-icon').textContent = info.icone;
-  document.getElementById('legend-info-title').textContent = info.titre;
+  const panel = document.getElementById('panneau-legende-info');
+  document.getElementById('legende-info-icone').textContent = info.icone;
+  document.getElementById('panneau-legende-titre').textContent = info.titre;
 
-  const body = document.getElementById('legend-info-body');
+  const body = document.getElementById('panneau-legende-corps');
   body.innerHTML = '';
 
   info.blocs.forEach(bloc => {
     const div = document.createElement('div');
-    div.className = 'legend-info-block';
+    div.className = 'bloc-info-legende';
     div.innerHTML = `<strong>${bloc.titre}</strong>${bloc.texte}`;
     body.appendChild(div);
   });
 
   if (info.stats && info.stats.length > 0) {
     const statsDiv = document.createElement('div');
-    statsDiv.className = 'legend-info-block';
+    statsDiv.className = 'bloc-info-legende';
     statsDiv.innerHTML = info.stats.map(s =>
-      `<div class="legend-info-stat"><span>${s.label}</span><span>${s.valeur}</span></div>`
+      `<div class="stat-info-legende"><span>${s.label}</span><span>${s.valeur}</span></div>`
     ).join('');
     body.appendChild(statsDiv);
   }
 
   if (info.explication) {
     const expDiv = document.createElement('div');
-    expDiv.className = 'legend-info-block';
+    expDiv.className = 'bloc-info-legende';
     expDiv.innerHTML = `<strong>${info.explication.titre}</strong>${info.explication.texte}`;
     body.appendChild(expDiv);
   }
@@ -2173,7 +2173,7 @@ function ouvrirPanneauLegende(cle) {
 }
 
 function fermerPanneauLegende() {
-  document.getElementById('legend-info-panel').classList.add('hidden');
+  document.getElementById('panneau-legende-info').classList.add('hidden');
 }
 
 // ===== GUILDES TROPHIQUES =====
@@ -2189,9 +2189,9 @@ const csvVersGeojson = {
   'Staphylin': 'staphylins', 'Vers de terre': 'vers_terre'
 };
 
-let guildesMapping = {};
-let guildesChartInstance = null;
-let piegesBarberDataGlobal = null;
+let correspondanceGuildes = {};
+let instanceGraphiqueGuildes = null;
+let donneesPiegesBarber = null;
 
 async function chargerGuildes() {
   try {
@@ -2200,20 +2200,20 @@ async function chargerGuildes() {
     lignes.forEach(ligne => {
       const [espece, guilde] = ligne.split(';').map(s => s.trim());
       const cleGeojson = csvVersGeojson[espece];
-      if (cleGeojson && guilde) guildesMapping[cleGeojson] = guilde;
+      if (cleGeojson && guilde) correspondanceGuildes[cleGeojson] = guilde;
     });
   } catch(e) {
     console.warn('Impossible de charger le fichier guildes:', e);
   }
 }
 
-function afficherGuildesChart(siteNom, piegeProps) {
-  if (!piegesBarberDataGlobal || Object.keys(guildesMapping).length === 0) return;
+function afficherGraphiqueGuildes(siteNom, piegeProps) {
+  if (!donneesPiegesBarber || Object.keys(correspondanceGuildes).length === 0) return;
 
   // Ouvrir la sidebar si elle est fermée
   const sidebar = document.getElementById('sidebar');
   if (sidebar.classList.contains('collapsed')) {
-    sidebarOpen = true;
+    panneauOuvert = true;
     sidebar.classList.remove('collapsed');
   }
 
@@ -2228,7 +2228,7 @@ function afficherGuildesChart(siteNom, piegeProps) {
     setTimeout(() => sidebar.scrollTo({ top: section.offsetTop - 32, behavior: 'smooth' }), 320);
   }
 
-  const panel = document.getElementById('guildes-panel');
+  const panel = document.getElementById('panneau-guildes');
   panel.querySelector('h3').textContent = `Guildes — ${siteNom}`;
   panel.classList.remove('hidden');
   setTimeout(() => map.invalidateSize(), 320);
@@ -2237,10 +2237,10 @@ function afficherGuildesChart(siteNom, piegeProps) {
   const guildes = ['Prédateur', 'Détritivore', 'Omnivore', 'Phytophage'];
 
   const totaux = {};
-  const source = piegeProps ? [{ properties: piegeProps }] : piegesBarberDataGlobal.features.filter(f => (f.properties.site_nom || 'Inconnu') === siteNom);
+  const source = piegeProps ? [{ properties: piegeProps }] : donneesPiegesBarber.features.filter(f => (f.properties.site_nom || 'Inconnu') === siteNom);
   source.forEach(f => {
-    Object.keys(guildesMapping).forEach(espece => {
-      const guilde = guildesMapping[espece];
+    Object.keys(correspondanceGuildes).forEach(espece => {
+      const guilde = correspondanceGuildes[espece];
       totaux[guilde] = (totaux[guilde] || 0) + (f.properties[espece] || 0);
     });
   });
@@ -2250,9 +2250,9 @@ function afficherGuildesChart(siteNom, piegeProps) {
   const total = data.reduce((a, b) => a + b, 0);
 
   const canvas = document.getElementById('guildesChart');
-  if (guildesChartInstance) guildesChartInstance.destroy();
+  if (instanceGraphiqueGuildes) instanceGraphiqueGuildes.destroy();
   setTimeout(() => {
-    guildesChartInstance = new Chart(canvas, {
+    instanceGraphiqueGuildes = new Chart(canvas, {
       type: 'bar',
       data: {
         labels: [siteNom],
@@ -2292,11 +2292,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function createLegend() {
+function creerLegende() {
   const legend = L.control({ position: 'bottomright' });
   
   legend.onAdd = function(map) {
-    const div = L.DomUtil.create('div', 'legend');
+    const div = L.DomUtil.create('div', 'legende');
     div.innerHTML = `
       <h4>
             <i data-lucide="map"></i>
@@ -2305,92 +2305,92 @@ function createLegend() {
           
           
           <!-- 1. Évolution historique jardins familiaux -->
-          <div class="legend-section">
-            <strong class="legend-item clickable" data-info="jardins-familiaux">Évolution historique</strong>
-            <div class="legend-item clickable" data-info="jardins-familiaux">
-              <div class="legend-symbol" style="background-color: #ef4444; opacity: 0.4;"></div>
-              <span class="legend-text">Jardins familiaux 1956</span>
+          <div class="legende-section">
+            <strong class="legende-element clickable" data-info="jardins-familiaux">Évolution historique</strong>
+            <div class="legende-element clickable" data-info="jardins-familiaux">
+              <div class="legende-symbole" style="background-color: #ef4444; opacity: 0.4;"></div>
+              <span class="legende-texte">Jardins familiaux 1956</span>
             </div>
-            <div class="legend-item clickable" data-info="jardins-familiaux">
-              <div class="legend-symbol" style="background-color: #f97316; opacity: 0.4;"></div>
-              <span class="legend-text">Jardins familiaux 1978</span>
+            <div class="legende-element clickable" data-info="jardins-familiaux">
+              <div class="legende-symbole" style="background-color: #f97316; opacity: 0.4;"></div>
+              <span class="legende-texte">Jardins familiaux 1978</span>
             </div>
-            <div class="legend-item clickable" data-info="jardins-familiaux">
-              <div class="legend-symbol" style="background-color: #3b82f6; opacity: 0.4;"></div>
-              <span class="legend-text">Jardins familiaux 2026</span>
+            <div class="legende-element clickable" data-info="jardins-familiaux">
+              <div class="legende-symbole" style="background-color: #3b82f6; opacity: 0.4;"></div>
+              <span class="legende-texte">Jardins familiaux 2026</span>
             </div>
           </div>
 
           <!-- 2. Jardins partagés -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="jardins-partages">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="jardins-partages">
               <strong><span style="margin-right: 0 rem;">🌱 </span>Jardins partagés</strong>
-              <div class="legend-symbol" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 3. Potagers Urbains Collectifs -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="puc">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="puc">
               <strong><span style="margin-right: 0 rem;">🥦 </span>Potagers Urbains Collectifs</strong>
-              <div class="legend-symbol" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 4. Massifs nourriciers -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="massifs-nourriciers">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="massifs-nourriciers">
               <strong><span style="margin-right: 0 rem;">🫐 </span>Massifs nourriciers</strong>
-              <div class="legend-symbol" style="background-color: #a78bfa; opacity: 0.45; border: 2px solid #7c3aed; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole" style="background-color: #a78bfa; opacity: 0.45; border: 2px solid #7c3aed; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 5. Cités Fertiles -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="cites-fertiles">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="cites-fertiles">
               <strong><span style="margin-right: 0 rem;">🌸 </span>Cités Fertiles</strong>
-              <div class="legend-symbol" style="background-color: #f9a8d4; opacity: 0.45; border: 2px solid #ec4899; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole" style="background-color: #f9a8d4; opacity: 0.45; border: 2px solid #ec4899; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 6. Jardins productifs -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="jardins-productifs">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="jardins-productifs">
               <strong><span style="margin-right: 0 rem;">🌿 </span>Jardins productifs</strong>
-              <div class="legend-symbol" style="background-color: #f97316; opacity: 0.45; border: 2px solid #ea580c; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole" style="background-color: #f97316; opacity: 0.45; border: 2px solid #ea580c; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 7. Pièges Barber -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="pieges-barber">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="pieges-barber">
               <strong><span style="margin-right: 0 rem;">🪲 </span>Pièges Barber (invertébrés)</strong>
-              <div class="legend-symbol circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 8. Production agricole -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="production-agricole">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="production-agricole">
               <strong><span style="margin-right: 0 rem;">🌾 </span>Production agricole</strong>
-              <div class="legend-symbol circle" style="background-color: #e4e131; border: 2px solid #109927; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole circle" style="background-color: #e4e131; border: 2px solid #109927; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 9. Initiatives jardinesques -->
-          <div class="legend-section">
-            <div class="legend-item clickable" data-info="initiatives-jardinesques">
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="initiatives-jardinesques">
               <strong><span style="margin-right: 0 rem;">🌻 </span>Initiatives jardinesques</strong>
-              <div class="legend-symbol circle" style="background-color: #fbbf24; border: 2px solid #d97706; margin-left: 0.55rem;"></div>
+              <div class="legende-symbole circle" style="background-color: #fbbf24; border: 2px solid #d97706; margin-left: 0.55rem;"></div>
             </div>
           </div>
 
           <!-- 10. Autres couches -->
-          <div class="legend-section">
-            <strong class="legend-item clickable" data-info="limites-ems">🏛️ Autres couches</strong>
-            <div class="legend-item clickable" data-info="limites-ems">
-              <div class="legend-symbol line" style="background-color: #6b7280;"></div>
-              <span class="legend-text">Limites administratives EMS</span>
+          <div class="legende-section">
+            <strong class="legende-element clickable" data-info="limites-ems">🏛️ Autres couches</strong>
+            <div class="legende-element clickable" data-info="limites-ems">
+              <div class="legende-symbole line" style="background-color: #6b7280;"></div>
+              <span class="legende-texte">Limites administratives EMS</span>
             </div>
           </div>
 
@@ -2415,7 +2415,7 @@ function createLegend() {
 
   legend.addTo(map);
 
-  document.getElementById('legend-info-close').addEventListener('click', fermerPanneauLegende);
+  document.getElementById('panneau-legende-fermer').addEventListener('click', fermerPanneauLegende);
 }
 
 /* ===== ÉVÉNEMENTS DE LA CARTE OPTIMISÉS ===== */
@@ -2555,7 +2555,7 @@ enhancementStyles.textContent = `
     text-align: center;
   }
   
-  .export-progress .loading-spinner {
+  .export-progress .spinner-chargement {
     margin: 0 auto 1rem;
   }
   
@@ -2584,7 +2584,7 @@ document.head.appendChild(enhancementStyles);
 
 // Créer la légende après le chargement
 setTimeout(() => {
-  createLegend();
+  creerLegende();
   
   // Attribution personnalisée
   L.control.attribution({
@@ -2724,7 +2724,7 @@ function formatDate(date) {
 // Fonction pour sauvegarder les préférences utilisateur
 function saveUserPreferences() {
   const prefs = {
-    sidebarOpen: sidebarOpen,
+    panneauOuvert: panneauOuvert,
     lastVisit: new Date().toISOString()
   };
   localStorage.setItem('userPreferences', JSON.stringify(prefs));
@@ -2734,8 +2734,8 @@ function saveUserPreferences() {
 function loadUserPreferences() {
   try {
     const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
-    if (prefs.sidebarOpen !== undefined) {
-      sidebarOpen = prefs.sidebarOpen;
+    if (prefs.panneauOuvert !== undefined) {
+      panneauOuvert = prefs.panneauOuvert;
     }
   } catch (error) {
     console.warn('⚠️ Erreur lors du chargement des préférences:', error);
