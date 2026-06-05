@@ -407,6 +407,38 @@ const jardinsProductifs = L.geoJSON(null, {
   }
 });
 
+// Couche des espaces potentiellements cultivables
+const espacesPotentiellementsCultivables = L.geoJSON(null, {
+  style: {
+    color: "#22d69d",
+    weight: 2,
+    fillColor: "#99d99d",
+    fillOpacity: 0.45
+  },
+  onEachFeature: function(feature, layer) {
+    const props = feature.properties;
+    const superficie = props["M2"] ? Math.round(props["M2"]) + ' m²' : '—';
+    
+    layer.bindPopup(`
+      <div style="font-family: Inter, sans-serif; min-width: 200px;">
+      <h4 style="margin: 0 0 0.5rem 0; color: #22d69d; font-size: 1.1rem;">
+  🌿 Espace potentiellement cultivable
+      </h4>
+      <p style="margin: 0.25rem 0; font-weight: 500; color: #374151;">
+        <strong>${props.NOM || 'Sans nom'}</strong>
+      </p>
+      <p style="margin: 0.25rem 0; color: #6b7280; font-size: 0.875rem;">
+        Superficie : <strong>${superficie}</strong>
+      </p>
+    </div>
+`, { className: 'custom-popup', autoPan: false });
+  layer.on('mouseover', function() { layer.setStyle({ fillOpacity: 0.75, weight: 3}); });
+  layer.on('mouseout', function() { layer.setStyle({ fillOpacity: 0.45, weight: 2}); });
+  }
+});
+
+
+
 // Correspondance nom jardin → métadonnées
 const statsJardinsProductifs = {
   "JARDIN FRIDOLIN": {
@@ -933,7 +965,8 @@ function mettreAjourCouches() {
     "🫐 Massifs nourriciers": massifsNourriciers,
     "🌻 Initiatives jardinesques": initiativesEmergentes,
     "🌾 Production agricole pro": productionAgricole,
-    "🌿 Jardins productifs": jardinsProductifs
+    "🌿 Jardins productifs": jardinsProductifs,
+    "🌿 Espaces potentiellement cultivables": espacesPotentiellementsCultivables
   };
 
   Object.entries(layersHistoriques).forEach(([annee, couche]) => {
@@ -983,7 +1016,7 @@ async function loadAllData() {
     updateLoadingProgress(0, 100, 0);
     
     // Charger les données en parallèle
-    const [limitesData, piegesBarberData, jardinsPartagesData, pucData, citesFertilesData, massifsData, initiativesData, productionAgricoleData, fridolinData, lombricData, landsbergData, chouData, massifData, hohbergData] = await Promise.all([
+    const [limitesData, piegesBarberData, jardinsPartagesData, pucData, citesFertilesData, massifsData, initiativesData, productionAgricoleData, fridolinData, lombricData, landsbergData, chouData, massifData, hohbergData, espacesPotentiellementsCultivablesData] = await Promise.all([
       fetch('data/limites_ems_4326.geojson').then(r => r.json()).catch(() => null),
       fetch('data/pieges_barbers/BD_JARDIBIODIV.geojson').then(r => r.json()).catch(() => null),
       fetch('data/jardins_partagés/jardins_partagés.geojson').then(r => r.json()).catch(() => null),
@@ -998,6 +1031,7 @@ async function loadAllData() {
       fetch('data/jardins_productifs/Jardin_productif_Le_Chou_De_Bruxelles_2025.geojson').then(r => r.json()).catch(() => null),
       fetch('data/jardins_productifs/Jardin_productif_Massif_Nourricier_Esplanade_2025.geojson').then(r => r.json()).catch(() => null),
       fetch('data/jardins_productifs/Jardin_productif_Ferme_du_Hohberg_2025.geojson').then(r => r.json()).catch(() => null),
+      fetch('data/espaces_cultivables/ESPACES_POTENTIELLEMENTS_CULTIVABLES.geojson').then(r => r.json()).catch(() => null),
     ]);
 
     updateLoadingProgress(30, 100, 0);
@@ -1167,6 +1201,13 @@ async function loadAllData() {
       mettreAjourCouches();
       populerListeJardinsProductifs();
     }
+    
+    if (espacesPotentiellementsCultivablesData) {
+     espacesPotentiellementsCultivables.addData(espacesPotentiellementsCultivablesData);
+     espacesPotentiellementsCultivables.addTo(map);
+     mettreAjourCouches();
+    }
+
 
     updateLoadingProgress(80, 100, 0);
 
@@ -2117,6 +2158,19 @@ const legendeInfos = {
       { label: "Année", valeur: "2025" }
     ]
   },
+  "espaces-cultivables": {
+    icone: "🌿",
+    titre: "Espaces potentiellement cultivables",
+    blocs: [
+      {
+        titre: "Description",
+        texte: "Ces espaces sont des zones identifiées comme potentiellement exploitables pour des usages agricoles ou jardiniers en milieu urbain, dans le cadre du projet Récolte."
+      }
+    ],
+    stats: [
+      { label: "Source", valeur: "Projet Récolte" }
+    ]
+  },
   "limites-ems": {
     icone: "🏛️",
     titre: "Limites administratives EMS",
@@ -2385,7 +2439,15 @@ function creerLegende() {
             </div>
           </div>
 
-          <!-- 10. Autres couches -->
+          <!-- 10. Espaces potentiellement cultivables -->
+          <div class="legende-section">
+            <div class="legende-element clickable" data-info="espaces-cultivables">
+              <strong><span style="margin-right: 0 rem;">🌿 </span>Espaces potentiellement cultivables</strong>
+              <div class="legende-symbole" style="background-color: #99d99d; opacity: 0.45; border: 2px solid #22d69d; margin-left: 0.55rem;"></div>
+            </div>
+          </div>
+
+          <!-- 11. Autres couches -->
           <div class="legende-section">
             <strong class="legende-element clickable" data-info="limites-ems">🏛️ Autres couches</strong>
             <div class="legende-element clickable" data-info="limites-ems">
