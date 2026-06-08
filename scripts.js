@@ -11,6 +11,13 @@ const couchesHistoriques = {
 const layersHistoriques = {};
 const statsEvol = {};
 
+// Configuration EmailJS (formulaire de contact) — un seul jeu de clés utilisé partout
+const EMAIL_CONFIG = {
+  serviceID: 'service_d1fa99a',
+  templateID: 'template_z7j0xu6',
+  publicKey: 'igc9S3ZD0rOjTXx7k'
+};
+
 // Variables pour l'état de l'application
 let panneauOuvert = true;
 let currentFilter = 'all';
@@ -30,7 +37,7 @@ const map = L.map('map', {
 }).setView([48.5734, 7.7521], 12);
 
 // Ajout du contrôle de zoom personnalisé
-L.control.zoom({
+const zoomControl = L.control.zoom({
   position: 'topright'
 }).addTo(map);
 
@@ -409,11 +416,14 @@ const jardinsProductifs = L.geoJSON(null, {
 
 // Couche des espaces potentiellements cultivables
 const espacesPotentiellementsCultivables = L.geoJSON(null, {
-  style: {
-    color: "#22d69d",
-    weight: 2,
-    fillColor: "#99d99d",
-    fillOpacity: 0.45
+  style: function(feature) {
+    const estRouge = feature.properties.couleur === 'rouge';
+    return {
+      color: estRouge ? "#e63946" : "#22d69d",
+      weight: 2,
+      fillColor: estRouge ? "#ff8a8a" : "#99d99d",
+      fillOpacity: 0.45
+    };
   },
   onEachFeature: function(feature, layer) {
     const props = feature.properties;
@@ -956,28 +966,18 @@ function mettreAjourCouches() {
     "🗺️ CartoDB": cartoDB
   };
 
-  const couchesAffichage = {
-    "🏛️ Limites EMS": limitesEMS,
-    "🪲 Pièges Barber": piegesCluster || piegesBarber,
-    "🥦 Potagers Urbains Collectifs": puc,
-    "🌱 Jardins partagés": jardinsPartages,
-    "🌸 Cités Fertiles": citesFertiles,
-    "🫐 Massifs nourriciers": massifsNourriciers,
-    "🌻 Initiatives jardinesques": initiativesEmergentes,
-    "🌾 Production agricole pro": productionAgricole,
-    "🌿 Jardins productifs": jardinsProductifs,
-    "🌿 Espaces potentiellement cultivables": espacesPotentiellementsCultivables
-  };
-
-  Object.entries(layersHistoriques).forEach(([annee, couche]) => {
-    couchesAffichage[`🏡 Jardins familiaux ${annee}`] = couche;
-  });
-
-  controleCouches = L.control.layers(fondsCarte, couchesAffichage, {
+  controleCouches = L.control.layers(fondsCarte, null, {
     collapsed: false,
     position: 'topright'
   });
   controleCouches.addTo(map);
+
+  // Inverser l'ordre d'affichage : sélecteur de couches au-dessus, zoom en dessous
+  const conteneurCouches = controleCouches.getContainer();
+  const conteneurZoom = zoomControl.getContainer();
+  if (conteneurCouches && conteneurZoom && conteneurCouches.parentNode === conteneurZoom.parentNode) {
+    conteneurZoom.parentNode.insertBefore(conteneurCouches, conteneurZoom);
+  }
 }
 
 
@@ -1204,7 +1204,6 @@ async function loadAllData() {
     
     if (espacesPotentiellementsCultivablesData) {
      espacesPotentiellementsCultivables.addData(espacesPotentiellementsCultivablesData);
-     espacesPotentiellementsCultivables.addTo(map);
      mettreAjourCouches();
     }
 
@@ -1830,13 +1829,6 @@ function showContactForm() {
       timestamp: new Date().toLocaleString('fr-FR')
     };
 
-    // ✅ CONFIGURATION EMAILJS - REMPLACEZ PAR VOS VRAIES CLÉS
-    const EMAIL_CONFIG = {
-      serviceID: 'service_d1fa99a',
-      templateID: 'template_z7j0xu6',
-      publicKey: 'igc9S3ZD0rOjTXx7k'
-    };
-
     // Préparer les données pour EmailJS
     const emailParams = {
       from_name: contactData.name,
@@ -1897,12 +1889,6 @@ function showContactForm() {
 }
 
 function initEmailJS() {
-  const EMAIL_CONFIG = {
-    serviceID: 'service_02zylod',
-    templateID: 'template_mx6j3mi',
-    publicKey: '0aupTGY69X7AZIVko'
-  };
-
   if (typeof emailjs !== 'undefined') {
     emailjs.init(EMAIL_CONFIG.publicKey);
     console.log('✅ EmailJS initialisé avec succès');
@@ -2061,7 +2047,9 @@ const legendeInfos = {
     stats: [
       { label: "Indicateurs", valeur: "Abondance, Diversité, Shannon, Piélou" }
     ],
-    explication: { titre: "Indices écologiques", texte: "L'indice de Shannon mesure la diversité des espèces : plus il est élevé, plus le milieu est diversifié.<br><br>L'indice de Piélou (ou équitabilité) indique si les espèces sont présentes en proportions équilibrées ou déséquilibrées. Un indice proche de 1 signifie que toutes les espèces sont aussi abondantes les unes que les autres." }
+    explication: [
+      { titre: "Indices écologiques", texte: "L'indice de Shannon mesure la diversité des espèces : plus il est élevé, plus le milieu est diversifié.<br><br>L'indice de Piélou (ou équitabilité) indique si les espèces sont présentes en proportions équilibrées ou déséquilibrées. Un indice proche de 1 signifie que toutes les espèces sont aussi abondantes les unes que les autres." }
+    ]
   },
   "puc": {
     icone: "🥦",
@@ -2164,12 +2152,18 @@ const legendeInfos = {
     blocs: [
       {
         titre: "Description",
-        texte: "Ces espaces sont des zones identifiées comme potentiellement exploitables pour des usages agricoles ou jardiniers en milieu urbain, dans le cadre du projet Récolte."
+        texte: "Ces espaces appartenant aux collectivités locales de l'EMS, sont des zones identifiées comme potentiellement exploitables pour des usages jardiniers en milieu " +
+               "urbain, dans le cadre du projet Récolte."
       }
     ],
-    stats: [
-      { label: "Source", valeur: "Projet Récolte" }
-    ]
+
+    explication: [
+      { titre: "Facilement mobilisables", texte: "Ces espaces facile d'accès en mobilitées douces répertories un certains nombres de parcs, squares, ronds-points, abords de complexes sportifs, berges et espaces verts hospitaliers." },
+      { titre: "Accès à aménager", texte: "ttttttttttexte ici" }
+    ],
+  
+
+    source: "Projet Récolte"
   },
   "limites-ems": {
     icone: "🏛️",
@@ -2216,10 +2210,19 @@ function ouvrirPanneauLegende(cle) {
   }
 
   if (info.explication) {
-    const expDiv = document.createElement('div');
-    expDiv.className = 'bloc-info-legende';
-    expDiv.innerHTML = `<strong>${info.explication.titre}</strong>${info.explication.texte}`;
-    body.appendChild(expDiv);
+    info.explication.forEach(exp => {
+      const expDiv = document.createElement('div');
+      expDiv.className = 'bloc-info-legende';
+      expDiv.innerHTML = `<strong>${exp.titre}</strong>${exp.texte}`;
+      body.appendChild(expDiv);
+    });
+  }
+
+  if (info.source) {
+    const sourceDiv = document.createElement('div');
+    sourceDiv.className = 'bloc-info-legende';
+    sourceDiv.innerHTML = `<div class="stat-info-legende"><span>Source</span><span>${info.source}</span></div>`;
+    body.appendChild(sourceDiv);
   }
 
   panel.classList.remove('hidden');
@@ -2362,97 +2365,88 @@ function creerLegende() {
           <div class="legende-section">
             <strong class="legende-element clickable" data-info="jardins-familiaux">Évolution historique</strong>
             <div class="legende-element clickable" data-info="jardins-familiaux">
+              <input type="checkbox" id="toggle-jardins-familiaux-1956" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole" style="background-color: #ef4444; opacity: 0.4;"></div>
               <span class="legende-texte">Jardins familiaux 1956</span>
             </div>
             <div class="legende-element clickable" data-info="jardins-familiaux">
+              <input type="checkbox" id="toggle-jardins-familiaux-1978" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole" style="background-color: #f97316; opacity: 0.4;"></div>
               <span class="legende-texte">Jardins familiaux 1978</span>
             </div>
             <div class="legende-element clickable" data-info="jardins-familiaux">
+              <input type="checkbox" id="toggle-jardins-familiaux-2026" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole" style="background-color: #3b82f6; opacity: 0.4;"></div>
               <span class="legende-texte">Jardins familiaux 2026</span>
             </div>
           </div>
 
-          <!-- 2. Jardins partagés -->
+          <!-- 2. Agriculture urbaine -->
           <div class="legende-section">
+            <strong class="legende-element">Agriculture urbaine</strong>
             <div class="legende-element clickable" data-info="jardins-partages">
-              <strong><span style="margin-right: 0 rem;">🌱 </span>Jardins partagés</strong>
-              <div class="legende-symbole" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-jardins-partages" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole" style="background-color: #22c55e; opacity: 0.6; border: 2px solid #16a34a;"></div>
+              <span class="legende-texte">Jardins partagés</span>
             </div>
-          </div>
-
-          <!-- 3. Potagers Urbains Collectifs -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="puc">
-              <strong><span style="margin-right: 0 rem;">🥦 </span>Potagers Urbains Collectifs</strong>
-              <div class="legende-symbole" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-puc" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole" style="background-color: #2dd4bf; opacity: 0.6; border: 2px solid #0f766e;"></div>
+              <span class="legende-texte">Potagers Urbains Collectifs</span>
             </div>
-          </div>
-
-          <!-- 4. Massifs nourriciers -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="massifs-nourriciers">
-              <strong><span style="margin-right: 0 rem;">🫐 </span>Massifs nourriciers</strong>
-              <div class="legende-symbole" style="background-color: #a78bfa; opacity: 0.45; border: 2px solid #7c3aed; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-massifs-nourriciers" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole" style="background-color: #a78bfa; opacity: 0.45; border: 2px solid #7c3aed;"></div>
+              <span class="legende-texte">Massifs nourriciers</span>
             </div>
-          </div>
-
-          <!-- 5. Cités Fertiles -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="cites-fertiles">
-              <strong><span style="margin-right: 0 rem;">🌸 </span>Cités Fertiles</strong>
-              <div class="legende-symbole" style="background-color: #f9a8d4; opacity: 0.45; border: 2px solid #ec4899; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-cites-fertiles" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole" style="background-color: #f9a8d4; opacity: 0.45; border: 2px solid #ec4899;"></div>
+              <span class="legende-texte">Cités Fertiles</span>
             </div>
-          </div>
-
-          <!-- 6. Jardins productifs -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="jardins-productifs">
-              <strong><span style="margin-right: 0 rem;">🌿 </span>Jardins productifs</strong>
-              <div class="legende-symbole" style="background-color: #f97316; opacity: 0.45; border: 2px solid #ea580c; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-jardins-productifs" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole" style="background-color: #f97316; opacity: 0.45; border: 2px solid #ea580c;"></div>
+              <span class="legende-texte">Jardins productifs</span>
             </div>
-          </div>
-
-          <!-- 7. Pièges Barber -->
-          <div class="legende-section">
-            <div class="legende-element clickable" data-info="pieges-barber">
-              <strong><span style="margin-right: 0 rem;">🪲 </span>Pièges Barber (invertébrés)</strong>
-              <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95; margin-left: 0.55rem;"></div>
-            </div>
-          </div>
-
-          <!-- 8. Production agricole -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="production-agricole">
-              <strong><span style="margin-right: 0 rem;">🌾 </span>Production agricole</strong>
-              <div class="legende-symbole circle" style="background-color: #e4e131; border: 2px solid #109927; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-production-agricole" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole circle" style="background-color: #e4e131; border: 2px solid #109927;"></div>
+              <span class="legende-texte">Production agricole</span>
             </div>
-          </div>
-
-          <!-- 9. Initiatives jardinesques -->
-          <div class="legende-section">
             <div class="legende-element clickable" data-info="initiatives-jardinesques">
-              <strong><span style="margin-right: 0 rem;">🌻 </span>Initiatives jardinesques</strong>
-              <div class="legende-symbole circle" style="background-color: #fbbf24; border: 2px solid #d97706; margin-left: 0.55rem;"></div>
+              <input type="checkbox" id="toggle-initiatives-jardinesques" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole circle" style="background-color: #fbbf24; border: 2px solid #d97706;"></div>
+              <span class="legende-texte">Initiatives jardinesques</span>
             </div>
           </div>
 
-          <!-- 10. Espaces potentiellement cultivables -->
+          <!-- 3. Autres couches -->
           <div class="legende-section">
-            <div class="legende-element clickable" data-info="espaces-cultivables">
-              <strong><span style="margin-right: 0 rem;">🌿 </span>Espaces potentiellement cultivables</strong>
-              <div class="legende-symbole" style="background-color: #99d99d; opacity: 0.45; border: 2px solid #22d69d; margin-left: 0.55rem;"></div>
-            </div>
-          </div>
-
-          <!-- 11. Autres couches -->
-          <div class="legende-section">
-            <strong class="legende-element clickable" data-info="limites-ems">🏛️ Autres couches</strong>
+            <strong class="legende-element">🏛️ Autres couches</strong>
             <div class="legende-element clickable" data-info="limites-ems">
+              <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole line" style="background-color: #6b7280;"></div>
               <span class="legende-texte">Limites administratives EMS</span>
+            </div>
+
+            <div class="legende-element clickable" data-info="pieges-barber">
+              <input type="checkbox" id="toggle-pieges-barber" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95;"></div>
+              <span class="legende-texte">Pièges Barber (invertébrés)</span>
+            </div>
+
+            <div class="legende-element clickable" data-info="espaces-cultivables">
+              <input type="checkbox" id="toggle-espaces-potentiellement-cultivables" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <span class="legende-texte">Espaces potentiellement cultivables</span>
+            </div>
+            <div class="legende-element clickable" data-info="espaces-cultivables">
+              <div class="legende-symbole" style="background-color: #99d99d; opacity: 0.45; border: 2px solid #22d69d;"></div>
+              <span class="legende-texte">Facilement mobilisable</span>
+            </div>
+            <div class="legende-element clickable" data-info="espaces-cultivables">
+              <div class="legende-symbole" style="background-color: #ff8a8a; opacity: 0.45; border: 2px solid #e63946;"></div>
+              <span class="legende-texte">Accès à aménager</span>
             </div>
           </div>
 
@@ -2470,6 +2464,56 @@ function creerLegende() {
       lucide.createIcons();
       div.querySelectorAll('[data-info]').forEach(el => {
         el.addEventListener('click', () => ouvrirPanneauLegende(el.dataset.info));
+      });
+
+      // Cases à cocher de la légende — afficher/masquer une couche sans ouvrir le panneau d'info
+      const couchesAvecCaseACocher = [
+        { id: 'toggle-jardins-productifs', couche: jardinsProductifs },
+        { id: 'toggle-jardins-partages', couche: jardinsPartages },
+        { id: 'toggle-puc', couche: puc },
+        { id: 'toggle-massifs-nourriciers', couche: massifsNourriciers },
+        { id: 'toggle-cites-fertiles', couche: citesFertiles },
+        { id: 'toggle-pieges-barber', couche: piegesCluster || piegesBarber },
+        { id: 'toggle-production-agricole', couche: productionAgricole },
+        { id: 'toggle-initiatives-jardinesques', couche: initiativesEmergentes },
+        { id: 'toggle-espaces-potentiellement-cultivables', couche: espacesPotentiellementsCultivables },
+        { id: 'toggle-limites-ems', couche: limitesEMS }
+      ];
+
+      couchesAvecCaseACocher.forEach(({ id, couche }) => {
+        const toggle = div.querySelector(`#${id}`);
+        if (toggle) {
+          toggle.checked = map.hasLayer(couche);
+          toggle.addEventListener('click', e => e.stopPropagation());
+          toggle.addEventListener('change', function() {
+            if (this.checked) {
+              couche.addTo(map);
+            } else {
+              map.removeLayer(couche);
+            }
+          });
+        }
+      });
+
+      // Cases à cocher pour l'évolution historique des jardins familiaux
+      // (couches stockées dans layersHistoriques, créées de façon asynchrone :
+      // on récupère donc la couche par son année à chaque utilisation, plutôt
+      // qu'une seule fois à l'avance comme pour couchesAvecCaseACocher)
+      ['1956', '1978', '2026'].forEach(annee => {
+        const toggle = div.querySelector(`#toggle-jardins-familiaux-${annee}`);
+        if (toggle) {
+          toggle.checked = map.hasLayer(layersHistoriques[annee]);
+          toggle.addEventListener('click', e => e.stopPropagation());
+          toggle.addEventListener('change', function() {
+            const couche = layersHistoriques[annee];
+            if (!couche) return;
+            if (this.checked) {
+              couche.addTo(map);
+            } else {
+              map.removeLayer(couche);
+            }
+          });
+        }
       });
     }, 100);
     return div;
