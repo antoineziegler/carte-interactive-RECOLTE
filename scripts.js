@@ -452,7 +452,7 @@ const espacesPotentiellementsCultivables = L.geoJSON(null, {
 // Correspondance nom jardin → métadonnées
 const statsJardinsProductifs = {
   "JARDIN FRIDOLIN": {
-    fichier: "data/stats_jardins_productifs/stats_Fridolin_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Fridolin_2025.xlsx",
     date: "2025",
     totalKg: 113,
     superficieCultivee: 300,
@@ -487,7 +487,7 @@ const statsJardinsProductifs = {
     ]
   },
   "LE LOMBRIC HARDI": {
-    fichier: "data/stats_jardins_productifs/stats_Hombric_Hardi_2021.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2021/stats_Hombric_Hardi_2021.xlsx",
     date: "2021",
     totalKg: 72.9,
     superficieCultivee: 42,
@@ -497,7 +497,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "LANDSBERG": {
-    fichier: "data/stats_jardins_productifs/stats_Landsberg_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Landsberg_2025.xlsx",
     date: "2025",
     totalKg: 82,
     superficieCultivee: 50,
@@ -516,7 +516,7 @@ const statsJardinsProductifs = {
     ]
   },
   "DOMINIQUE": {
-    fichier: "data/stats_jardins_productifs/stats_Dominique_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Dominique_2025.xlsx",
     date: "2025",
     totalKg: 156,
     superficieCultivee: 30,
@@ -552,7 +552,7 @@ const statsJardinsProductifs = {
   
   },
   "LE CHOU DE BRUXELLES": {
-    fichier: "data/stats_jardins_productifs/stats_Chou_De_Bruxelles_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Chou_De_Bruxelles_2025.xlsx",
     date: "2025",
     totalKg: 169.5,
     superficieCultivee: 350,
@@ -562,7 +562,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "MASSIF NOURRICIER ESPLANADE": {
-    fichier: "data/stats_jardins_productifs/stats_Massif_Nourricier_Esplanade_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Massif_Nourricier_Esplanade_2025.xlsx",
     date: "2025",
     totalKg: 103.7,
     superficieCultivee: 242,
@@ -572,7 +572,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "FERME DU HOHBERG": {
-    fichier: "data/stats_jardins_productifs/stats_Ferme_Du_Hohberg_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Ferme_Du_Hohberg_2025.xlsx",
     date: "2025",
     totalKg: 152,
     superficieCultivee: 1500,
@@ -582,7 +582,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "CÉLINE & BEN": {
-    fichier: "data/stats_jardins_productifs/stats_Céline&Ben_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Céline&Ben_2025.xlsx",
     date: "2025",
     totalKg: 50,
     superficieCultivee: "24,4",
@@ -592,7 +592,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "APOLLINE": {
-    fichier: "data/stats_jardins_productifs/stats_Apolline_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Apolline_2025.xlsx",
     date: "2025",
     totalKg: 36.3,
     superficieCultivee: "24,3 m²",
@@ -602,7 +602,7 @@ const statsJardinsProductifs = {
     historique: []
   },
   "RAPHAËL": {
-    fichier: "data/stats_jardins_productifs/stats_Raphaël_2025.xlsx",
+    fichier: "data/stats_jardins_productifs/STATS_2025/stats_Raphaël_2025.xlsx",
     date: "2025",
     totalKg: 54.2,
     superficieCultivee: null,
@@ -1351,6 +1351,12 @@ function getColorForYear(annee) {
   return colors[annee] || "#6b7280";
 }
 
+const superficiesHistoriques = {
+  "1956": "253 ha",
+  "1978": "240.7 ha",
+  "2026": "206.4 ha"
+};
+
 function afficherEvolutionJardins() {
   const ul = document.getElementById('liste-evolution');
   if (!ul) return;
@@ -1366,9 +1372,12 @@ function afficherEvolutionJardins() {
     li.className = 'garden-item';
     li.style.animationDelay = `${index * 0.1}s`;
     li.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <div style="width: 12px; height: 12px; background: ${getColorForYear(annee)}; border-radius: 50%;"></div>
-        <span><strong>${annee}</strong> : ${statsEvol[annee]} collectifs de jardins</span>
+      <div style="display: flex; flex-direction: column; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="width: 12px; height: 12px; background: ${getColorForYear(annee)}; border-radius: 50%;"></div>
+          <span><strong>${annee}</strong> : ${statsEvol[annee]} collectifs de jardins</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Superficie : ${superficiesHistoriques[annee] || '— ha'}</div>
       </div>
     `;
     
@@ -2013,17 +2022,17 @@ const legendeInfos = {
     titre: "Jardins familiaux",
     blocs: [
       {
+        titre: "Évolution historique",
+        texte: "La carte représente l'évolution des jardins familiaux de 1956 à 2026 au sein de l'Eurométropole de Strasbourg. On y observe un recul notable de ces espaces, avec une perte de 46,7 ha, soit 18,5 % de la superficie initialement allouée.",
+      },
+      {
         titre: "Description",
-        texte: "Les jardins familiaux sont attribués à des particuliers par la Ville de Strasbourg. Ils permettent aux habitants de jardiner et de produire fruits et légumes pour leur consommation personnelle."
+        texte: "Les jardins familiaux sont attribués à des particuliers par la Ville de Strasbourg. Ils permettent aux habitants de jardiner et de produire fruits et légumes pour leur consommation personnelle.",
       },
       {
         titre: "Réglementation",
         texte: "Toute parcelle doit être plantée au minimum sur ⅔ de sa surface en potager."
       },
-      {
-        titre: "Évolution historique",
-        texte: "La carte présente l'évolution des jardins familiaux de 1956 à 2026, illustrant leur développement au fil des décennies dans l'Eurométropole de Strasbourg."
-      }
     ],
     stats: [
       { label: "Années disponibles", valeur: "1956, 1978, 2026" },
@@ -2087,7 +2096,7 @@ const legendeInfos = {
     blocs: [
       {
         titre: "Description",
-        texte: "Les Cités Fertiles sont des projets de végétalisation et de production alimentaire intégrés dans des quartiers résidentiels, visant à transformer les espaces urbains en lieux nourriciers."
+        texte: "Les Cités Fertiles sont des projets de production alimentaire intégrés dans des quartiers résidentiels, visant à végétaliser les espaces urbains en lieux nourriciers."
       }
     ],
     stats: [
@@ -2153,13 +2162,13 @@ const legendeInfos = {
       {
         titre: "Description",
         texte: "Ces espaces appartenant aux collectivités locales de l'EMS, sont des zones identifiées comme potentiellement exploitables pour des usages jardiniers en milieu " +
-               "urbain, dans le cadre du projet Récolte."
+               "urbain, dans le cadre du projet Récolte. Pour des raisons écologiques les espaces forestiers n'ont pas été comptabilisés."
       }
     ],
 
     explication: [
-      { titre: "Facilement mobilisables", texte: "Ces espaces facile d'accès en mobilitées douces répertories un certains nombres de parcs, squares, ronds-points, abords de complexes sportifs, berges et espaces verts hospitaliers." },
-      { titre: "Accès à aménager", texte: "ttttttttttexte ici" }
+      { titre: "Facilement mobilisables", texte: "Ces espaces, facile d'accès en mobilités douces, répertorient un certain nombre de parcs, squares, ronds-points, abords de complexes sportifs, berges et espaces verts hospitaliers." },
+      { titre: "Accès à aménager", texte: "Ces espaces, situés à proximité de grands axes routiers et ferroviaires (à l'instar des jardins familiaux), necessiteraient des aménagements d'accès afin de valoriser, ces interstices urbains et péri-urbains actuellement délaissés." }
     ],
   
 
@@ -2176,8 +2185,7 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Communes", valeur: "33" },
-      { label: "Source", valeur: "EMS / OpenData" },
-      { label: "TEST", valeur: "TESTTTTT"}
+      { label: "Source", valeur: "EMS / OpenData" }
     ]
   }
 };
@@ -2424,12 +2432,6 @@ function creerLegende() {
           <!-- 3. Autres couches -->
           <div class="legende-section">
             <strong class="legende-element">🏛️ Autres couches</strong>
-            <div class="legende-element clickable" data-info="limites-ems">
-              <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
-              <div class="legende-symbole line" style="background-color: #6b7280;"></div>
-              <span class="legende-texte">Limites administratives EMS</span>
-            </div>
-
             <div class="legende-element clickable" data-info="pieges-barber">
               <input type="checkbox" id="toggle-pieges-barber" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95;"></div>
@@ -2447,6 +2449,12 @@ function creerLegende() {
             <div class="legende-element clickable" data-info="espaces-cultivables">
               <div class="legende-symbole" style="background-color: #ff8a8a; opacity: 0.45; border: 2px solid #e63946;"></div>
               <span class="legende-texte">Accès à aménager</span>
+            </div>
+
+            <div class="legende-element clickable" data-info="limites-ems">
+              <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole line" style="background-color: #6b7280;"></div>
+              <span class="legende-texte">Limites administratives EMS</span>
             </div>
           </div>
 
