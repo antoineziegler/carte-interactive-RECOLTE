@@ -20,4 +20,10 @@ desktop.ini
 # Dossier QGIS (non nécessaire pour le web)
 qgis/
 
+# Données jardins particuliers privés (fichiers trop lourds pour GitHub)
+data/jardins_particuliers_privés/
+
 guide.md
+
+# README en cours de rédaction (temporaire)
+README.md

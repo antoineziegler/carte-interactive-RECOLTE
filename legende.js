@@ -157,6 +157,21 @@ const legendeInfos = {
 
     source: "Projet Récolte"
   },
+  "jardins-particuliers": {
+    icone: "🏠",
+    titre: "Jardins particuliers privés",
+    blocs: [
+      {
+        titre: "Description",
+        texte: "Parcelles privées identifiées comme jardins particuliers sur le territoire de l'Eurométropole de Strasbourg, d'après la classification de l'occupation du sol."
+      }
+    ],
+    stats: [
+      { label: "Source", valeur: "Ville et Eurométropole de Strasbourg" },
+      { label: "Millésime", valeur: "2021" }
+    ],
+    lien: { texte: "Télécharger les données (.gpkg)", url: "#" }
+  },
   "limites-ems": {
     icone: "🏛️",
     titre: "Limites administratives EMS",
@@ -220,6 +235,13 @@ function ouvrirPanneauLegende(cle) {
     sourceDiv.className = 'bloc-info-legende';
     sourceDiv.innerHTML = `<div class="stat-info-legende"><span>Source</span><span>${info.source}</span></div>`;
     body.appendChild(sourceDiv);
+  }
+
+  if (info.lien) {
+    const lienDiv = document.createElement('div');
+    lienDiv.className = 'bloc-info-legende';
+    lienDiv.innerHTML = `<a href="${info.lien.url}" target="_blank" style="display:inline-flex; align-items:center; gap:0.5rem; background:#16a34a; color:white; padding:0.5rem 1rem; border-radius:6px; text-decoration:none; font-size:0.85rem; font-weight:500; margin-top:0.25rem;">⬇ ${info.lien.texte}</a>`;
+    body.appendChild(lienDiv);
   }
 
   panel.classList.remove('hidden');
@@ -325,6 +347,10 @@ function creerLegende() {
               <span class="legende-texte">Accès à aménager</span>
             </div>
 
+            <div class="legende-element clickable" data-info="jardins-particuliers">
+              <div class="legende-symbole" style="background-color: #94a3b8; opacity: 0.6; border: 2px solid #475569;"></div>
+              <span class="legende-texte">Jardins particuliers privés ⬇</span>
+            </div>
             <div class="legende-element clickable" data-info="limites-ems">
               <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <div class="legende-symbole line" style="background-color: #6b7280;"></div>
@@ -412,5 +438,6 @@ function creerLegende() {
   legend.addTo(map);
 
   document.getElementById('panneau-legende-fermer').addEventListener('click', fermerPanneauLegende);
+
 }
 

@@ -423,6 +423,7 @@ const espacesPotentiellementsCultivables = L.geoJSON(null, {
 
 
 
+
 // Variable pour le contrôleur de couches
 let controleCouches;
 
@@ -682,6 +683,7 @@ async function loadAllData() {
      espacesPotentiellementsCultivables.addData(espacesPotentiellementsCultivablesData);
      mettreAjourCouches();
     }
+
 
 
     updateLoadingProgress(80, 100, 0);
