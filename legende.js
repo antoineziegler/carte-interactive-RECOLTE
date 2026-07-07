@@ -170,7 +170,7 @@ const legendeInfos = {
       { label: "Source", valeur: "Ville et Eurométropole de Strasbourg" },
       { label: "Millésime", valeur: "2021" }
     ],
-    lien: { texte: "Télécharger les données (.gpkg)", url: "#" }
+    lien: { texte: "Télécharger les données (.gpkg)", url: "https://github.com/antoineziegler/carte-interactive-RECOLTE/releases/download/JPP.2021/JARDINS_PRIVES_PARTICULIERS_ALL.zip" }
   },
   "limites-ems": {
     icone: "🏛️",
