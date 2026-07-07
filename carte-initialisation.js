@@ -424,6 +424,44 @@ const espacesPotentiellementsCultivables = L.geoJSON(null, {
 
 
 
+const jardinsPrivesMeinau = L.geoJSON(null, {
+  style: {
+    color: "#475569",
+    weight: 1,
+    opacity: 0.8,
+    fillColor: "#94a3b8",
+    fillOpacity: 0.35
+  },
+  onEachFeature: function(feature, layer) {
+    const props = feature.properties;
+    const superficie = props["SUPERFICIE (M2)"] ? props["SUPERFICIE (M2)"].toFixed(1) + ' m²' : '—';
+    layer.bindPopup(`
+      <div style="font-family: Inter, sans-serif; min-width: 180px;">
+        <h4 style="margin: 0 0 0.5rem 0; color: #475569; font-size: 1rem;">🏠 Jardin particulier privé</h4>
+        <p style="margin: 0.25rem 0; color: #6b7280; font-size: 0.875rem;">
+          Surface : <strong>${superficie}</strong>
+        </p>
+      </div>
+    `, { className: 'custom-popup', autoPan: false });
+    layer.on('mouseover', function() { layer.setStyle({ fillOpacity: 0.6, weight: 2 }); });
+    layer.on('mouseout', function() { layer.setStyle({ fillOpacity: 0.35, weight: 1 }); });
+  }
+});
+
+let jardinsPrivesMeinauCharges = false;
+
+async function chargerJardinsPrivesMeinau() {
+  if (jardinsPrivesMeinauCharges) return;
+  try {
+    const response = await fetch('data/jardins_particuliers_privés/JARDINS_PRIVES_PARTICULIERS-MEINAU.geojson');
+    const data = await response.json();
+    jardinsPrivesMeinau.addData(data);
+    jardinsPrivesMeinauCharges = true;
+  } catch(e) {
+    console.warn('Erreur chargement jardins Meinau:', e);
+  }
+}
+
 // Variable pour le contrôleur de couches
 let controleCouches;
 

@@ -21,7 +21,14 @@ desktop.ini
 qgis/
 
 # Données jardins particuliers privés (fichiers trop lourds pour GitHub)
-data/jardins_particuliers_privés/
+data/jardins_particuliers_privés/*.fgb
+data/jardins_particuliers_privés/*.mbtiles
+data/jardins_particuliers_privés/*.pmtiles
+data/jardins_particuliers_privés/*.zip
+data/jardins_particuliers_privés/*.gpkg
+data/jardins_particuliers_privés/*.qmd
+data/jardins_particuliers_privés/JARDINS_PRIVES_ALL.*
+data/jardins_particuliers_privés/JARDINS_PRIVES_PARTICULIERS_ALL.*
 
 guide.md
 

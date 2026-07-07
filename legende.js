@@ -348,8 +348,12 @@ function creerLegende() {
             </div>
 
             <div class="legende-element clickable" data-info="jardins-particuliers">
-              <div class="legende-symbole" style="background-color: #94a3b8; opacity: 0.6; border: 2px solid #475569;"></div>
+              <input type="checkbox" id="toggle-jardins-meinau" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
               <span class="legende-texte">Jardins particuliers privés ⬇</span>
+            </div>
+            <div class="legende-element" style="margin-bottom: 0.25rem;">
+              <div class="legende-symbole" style="background-color: #94a3b8; opacity: 0.6; border: 2px solid #475569;"></div>
+              <span class="legende-texte" style="font-size: 0.85rem; font-style: italic;">Exemple : quartier Meinau</span>
             </div>
             <div class="legende-element clickable" data-info="limites-ems">
               <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
@@ -438,6 +442,22 @@ function creerLegende() {
   legend.addTo(map);
 
   document.getElementById('panneau-legende-fermer').addEventListener('click', fermerPanneauLegende);
+
+  setTimeout(() => {
+    const toggleMeinau = document.querySelector('#toggle-jardins-meinau');
+    if (toggleMeinau) {
+      toggleMeinau.checked = false;
+      toggleMeinau.addEventListener('click', e => e.stopPropagation());
+      toggleMeinau.addEventListener('change', async function() {
+        if (this.checked) {
+          await chargerJardinsPrivesMeinau();
+          if (!map.hasLayer(jardinsPrivesMeinau)) jardinsPrivesMeinau.addTo(map);
+        } else {
+          if (map.hasLayer(jardinsPrivesMeinau)) map.removeLayer(jardinsPrivesMeinau);
+        }
+      });
+    }
+  }, 200);
 
 }
 
