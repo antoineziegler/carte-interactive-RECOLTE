@@ -19,7 +19,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Années disponibles", valeur: "1956, 1978, 2026" },
-      { label: "Gestionnaire", valeur: "Ville de Strasbourg" }
+      { label: "Gestionnaire", valeur: "Ville de Strasbourg" },
+      { label: "Source historique", valeur: "Stage Récolte Simon Irenée" }
     ]
   },
   "pieges-barber": {
@@ -35,13 +36,15 @@ const legendeInfos = {
         texte: "Chaque piège est relevé selon un protocole défini. Les données collectées (abondance, diversité, indice de Shannon, de Piélou) permettent de comparer les milieux entre eux."
       },
       
+      
     ],
     stats: [
       { label: "Indicateurs", valeur: "Abondance, Diversité, Shannon, Piélou" }
     ],
     explication: [
       { titre: "Indices écologiques", texte: "L'indice de Shannon mesure la diversité des espèces : plus il est élevé, plus le milieu est diversifié.<br><br>L'indice de Piélou (ou équitabilité) indique si les espèces sont présentes en proportions équilibrées ou déséquilibrées. Un indice proche de 1 signifie que toutes les espèces sont aussi abondantes les unes que les autres." }
-    ]
+    ],
+    source: "BD SolEnVille : Inventaire de la macrofaune des sols urbains de Strasbourg"
   },
   "puc": {
     icone: "🥦",
@@ -54,7 +57,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Gestionnaire", valeur: "Ville de Strasbourg" }
-    ]
+    ],
+    source: "Ziegler Antoine - Stage récolte 2026"
   },
   "jardins-partages": {
     icone: "🌱",
@@ -71,7 +75,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Statut", valeur: "Association / Collectif" }
-    ]
+    ],
+    source: "Ville et Eurométropole de Strasbourg | mis à jour, compilé et traité par Antoine Ziegler (Récolte)"
   },
   "cites-fertiles": {
     icone: "🌸",
@@ -84,7 +89,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Statut", valeur: "Associatif / Collectif" }
-    ]
+    ],
+    source: "Antoine Ziegler - Stage Récolte 2026"
   },
   "massifs-nourriciers": {
     icone: "🫐",
@@ -97,7 +103,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Statut", valeur: "Association / Collectif" }
-    ]
+    ],
+    source: "Antoine Ziegler - Stage Récolte 2026"
   },
   "production-agricole": {
     icone: "🌾",
@@ -110,7 +117,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Année", valeur: "2025" }
-    ]
+    ],
+    source: "Antoine Ziegler - Stage Récolte 2026"
   },
   "initiatives-jardinesques": {
     icone: "🌻",
@@ -123,7 +131,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Statut", valeur: "Projets émergents" }
-    ]
+    ],
+    source: "Antoine Ziegler - Stage Récolte 2026"
   },
   "jardins-productifs": {
     icone: "🌿",
@@ -136,7 +145,8 @@ const legendeInfos = {
     ],
     stats: [
       { label: "Année", valeur: "2025" }
-    ]
+    ],
+    source: "Antoine Ziegler - Stage Récolte 2026" 
   },
   "espaces-cultivables": {
     icone: "🌿",
@@ -163,12 +173,11 @@ const legendeInfos = {
     blocs: [
       {
         titre: "Description",
-        texte: "Parcelles privées identifiées comme jardins particuliers sur le territoire de l'Eurométropole de Strasbourg, d'après la classification de l'occupation du sol."
+        texte: "Parcelles privées où le maraichage domestique est envisageable, identifiées sur le territoire de l'Eurométropole de Strasbourg, d'après la classification de l'occupation du sol et le registre cadastrale."
       }
     ],
     stats: [
-      { label: "Source", valeur: "Ville et Eurométropole de Strasbourg" },
-      { label: "Millésime", valeur: "2021" }
+      { label: "Source", valeur: "Antoine Ziegler - Stage Récolte 2026" },
     ],
     lien: { texte: "Télécharger les données (.gpkg)", url: "https://github.com/antoineziegler/carte-interactive-RECOLTE/releases/download/JPP.2021/JARDINS_PRIVES_PARTICULIERS_ALL.zip" }
   },
@@ -325,18 +334,20 @@ function creerLegende() {
             </div>
           </div>
 
-          <!-- 3. Autres couches -->
+          <!-- 3. Espaces potentiellement cultivables -->
           <div class="legende-section">
-            <strong class="legende-element">🏛️ Autres couches</strong>
-            <div class="legende-element clickable" data-info="pieges-barber">
-              <input type="checkbox" id="toggle-pieges-barber" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
-              <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95;"></div>
-              <span class="legende-texte">Pièges Barber (invertébrés)</span>
+            <strong class="legende-element">Espaces potentiellement cultivables</strong>
+            <div class="legende-element clickable" data-info="jardins-particuliers">
+              <input type="checkbox" id="toggle-jardins-meinau" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <span class="legende-texte">Jardins particuliers privés <span style="font-size: 0.7rem; color: #6b7280; font-style: italic;">téléchargeable</span></span>
             </div>
-
+            <div class="legende-element" style="margin-bottom: 0.25rem;">
+              <div class="legende-symbole" style="background-color: #94a3b8; opacity: 0.6; border: 2px solid #475569;"></div>
+              <span class="legende-texte" style="font-size: 0.85rem; font-style: italic;">Exemple : quartier Meinau</span>
+            </div>
             <div class="legende-element clickable" data-info="espaces-cultivables">
               <input type="checkbox" id="toggle-espaces-potentiellement-cultivables" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
-              <span class="legende-texte">Espaces potentiellement cultivables</span>
+              <span class="legende-texte">Surfaces publiques </span>
             </div>
             <div class="legende-element clickable" data-info="espaces-cultivables">
               <div class="legende-symbole" style="background-color: #99d99d; opacity: 0.45; border: 2px solid #22d69d;"></div>
@@ -346,14 +357,15 @@ function creerLegende() {
               <div class="legende-symbole" style="background-color: #ff8a8a; opacity: 0.45; border: 2px solid #e63946;"></div>
               <span class="legende-texte">Accès à aménager</span>
             </div>
+          </div>
 
-            <div class="legende-element clickable" data-info="jardins-particuliers">
-              <input type="checkbox" id="toggle-jardins-meinau" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
-              <span class="legende-texte">Jardins particuliers privés ⬇</span>
-            </div>
-            <div class="legende-element" style="margin-bottom: 0.25rem;">
-              <div class="legende-symbole" style="background-color: #94a3b8; opacity: 0.6; border: 2px solid #475569;"></div>
-              <span class="legende-texte" style="font-size: 0.85rem; font-style: italic;">Exemple : quartier Meinau</span>
+          <!-- 4. Autres couches -->
+          <div class="legende-section">
+            <strong class="legende-element">Autres couches</strong>
+            <div class="legende-element clickable" data-info="pieges-barber">
+              <input type="checkbox" id="toggle-pieges-barber" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
+              <div class="legende-symbole circle" style="background-color: #7c3aed; opacity: 0.6; border: 2px solid #4c1d95;"></div>
+              <span class="legende-texte">Pièges Barber (invertébrés)</span>
             </div>
             <div class="legende-element clickable" data-info="limites-ems">
               <input type="checkbox" id="toggle-limites-ems" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">

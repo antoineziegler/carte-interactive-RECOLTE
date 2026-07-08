@@ -232,7 +232,7 @@ setTimeout(() => {
   // Attribution personnalisée
   L.control.attribution({
     position: 'bottomleft',
-    prefix: "Carte interactive RECOLTE"
+    prefix: "Carte interactive RECOLTE | Antoine Ziegler"
   }).addTo(map);
   
 }, 1000);
