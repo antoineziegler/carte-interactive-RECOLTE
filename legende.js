@@ -6,7 +6,7 @@ const legendeInfos = {
     blocs: [
       {
         titre: "Évolution historique",
-        texte: "La carte représente l'évolution des jardins familiaux de 1956 à 2026 au sein de l'Eurométropole de Strasbourg. On y observe un recul notable de ces espaces, avec une perte de 46,7 ha, soit 18,5 % de la superficie initialement allouée.",
+        texte: "La carte retrace l'évolution des jardins familiaux de 1956 à 2026 au sein de l'Eurométropole de Strasbourg. On y observe un recul notable de ces espaces, avec une perte de 46,7 ha, soit 18,5 % de la superficie initialement allouée en 1956.",
       },
       {
         titre: "Description",
@@ -20,7 +20,8 @@ const legendeInfos = {
     stats: [
       { label: "Années disponibles", valeur: "1956, 1978, 2026" },
       { label: "Gestionnaire", valeur: "Ville de Strasbourg" },
-      { label: "Source historique", valeur: "Stage Récolte Simon Irenée" }
+      { label: "Source historique", valeur: "Simon Irenée - Stage Récolte 2021" },
+      { label: "Source", valeur: "Antoine Ziegler - Stage Récolte 2026"}
     ]
   },
   "pieges-barber": {
@@ -347,7 +348,7 @@ function creerLegende() {
             </div>
             <div class="legende-element clickable" data-info="espaces-cultivables">
               <input type="checkbox" id="toggle-espaces-potentiellement-cultivables" style="margin-right: 0.4rem; cursor: pointer; vertical-align: middle;">
-              <span class="legende-texte">Surfaces publiques </span>
+              <span class="legende-texte">Surfaces publiques <em>(en construction)</em> </span>
             </div>
             <div class="legende-element clickable" data-info="espaces-cultivables">
               <div class="legende-symbole" style="background-color: #99d99d; opacity: 0.45; border: 2px solid #22d69d;"></div>

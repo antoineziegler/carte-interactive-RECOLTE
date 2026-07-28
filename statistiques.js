@@ -232,7 +232,7 @@ function getColorForYear(annee) {
 const superficiesHistoriques = {
   "1956": "253 ha",
   "1978": "240.7 ha",
-  "2026": "206.4 ha"
+  "2026": "206.3 ha"
 };
 
 function afficherEvolutionJardins() {

@@ -671,10 +671,25 @@ function initParticles() {
   setInterval(createParticle, 5000);
 }
 
-function ouvrirLightbox(src) {
+let lightboxGallerie = [];
+let lightboxIndexCourant = 0;
+
+function ouvrirLightbox(src, galerie = [], index = 0) {
   const lb = document.getElementById('lightbox');
   document.getElementById('lightbox-img').src = src;
+  lightboxGallerie = galerie;
+  lightboxIndexCourant = index;
+  const prev = document.getElementById('lightbox-prev');
+  const next = document.getElementById('lightbox-next');
+  const afficherFleches = galerie.length > 1;
+  prev.style.display = afficherFleches ? 'flex' : 'none';
+  next.style.display = afficherFleches ? 'flex' : 'none';
   lb.classList.remove('hidden');
+}
+
+function naviguerLightbox(direction) {
+  lightboxIndexCourant = (lightboxIndexCourant + direction + lightboxGallerie.length) % lightboxGallerie.length;
+  document.getElementById('lightbox-img').src = lightboxGallerie[lightboxIndexCourant];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
