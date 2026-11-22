@@ -4,6 +4,8 @@
 const map = L.map('map', {
   zoomControl: false,
   attributionControl: false,
+  maxZoom: 22, // indispensable pour le regroupement des pièges Barber (markercluster)
+               // depuis que le fond par défaut (Positron/MapLibre) ne fournit pas de zoom max
   preferCanvas: true, // OPTIMISATION: Utiliser Canvas pour de meilleures performances
   zoomAnimation: true,
   fadeAnimation: true,
@@ -29,10 +31,13 @@ const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servi
   updateWhenIdle: false
 });
 
-const cartoDB = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
-  maxZoom: 22, 
-  attribution: '© CartoDB | <a href="https://leafletjs.com">Leaflet</a>',
-  updateWhenIdle: false
+// Fond clair "Positron" (même style que l'ancien fond CartoDB), servi gratuitement
+// et sans clé API par OpenFreeMap. Ce sont des tuiles vectorielles : elles sont
+// dessinées par MapLibre (chargé dans index.html) et restent nettes à tous les zooms.
+// Remplace CartoDB qui exige désormais une clé API (carto.com/basemaps/apikey).
+const fondClair = L.maplibreGL({
+  style: 'https://tiles.openfreemap.org/styles/positron',
+  attribution: '© <a href="https://openfreemap.org">OpenFreeMap</a> © OpenMapTiles © OpenStreetMap | <a href="https://leafletjs.com">Leaflet</a>'
 }).addTo(map);
 
 // Couches de données géographiques
@@ -478,7 +483,7 @@ function mettreAjourCouches() {
   const fondsCarte = {
     "🗺️ OpenStreetMap": osm,
     "🛰️ Satellite": satellite,
-    "🗺️ CartoDB": cartoDB
+    "🗺️ Fond clair": fondClair
   };
 
   controleCouches = L.control.layers(fondsCarte, null, {

@@ -9,9 +9,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <!-- MapLibre + son plugin Leaflet : affichent le fond clair "Positron" (tuiles vectorielles OpenFreeMap) -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   
@@ -172,9 +176,12 @@
 
     <!-- Sidebar projection -->
     <div id="sidebar-projection" class="hidden" style="display:none;">
-      <img src="data/projection_RECOLTE/tableau_1.png" alt="Tableau 1" style="width:100%; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/tableau_1.png','data/projection_RECOLTE/tableau_2.png','data/projection_RECOLTE/tableau_3.png'], 0)" />
-      <img src="data/projection_RECOLTE/tableau_2.png" alt="Tableau 2" style="width:100%; margin-top:1rem; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/tableau_1.png','data/projection_RECOLTE/tableau_2.png','data/projection_RECOLTE/tableau_3.png'], 1)" />
-      <img src="data/projection_RECOLTE/tableau_3.png" alt="Tableau 3" style="width:100%; margin-top:1rem; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/tableau_1.png','data/projection_RECOLTE/tableau_2.png','data/projection_RECOLTE/tableau_3.png'], 2)" />
+      <!-- EMPLACEMENTS À COMPLÉTER : remplacer chaque bloc par l'image du tableau, par ex. :
+           <img src="data/projection_RECOLTE/tableau_1.png" alt="Tableau 1" style="width:100%; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/tableau_1.png','data/projection_RECOLTE/tableau_2.png','data/projection_RECOLTE/tableau_3.png'], 0)" />
+           (les anciennes images sont toujours dans data/projection_RECOLTE/) -->
+      <div style="height:140px; display:flex; align-items:center; justify-content:center; border:2px dashed var(--border-color); border-radius:12px; color:var(--text-secondary); font-size:0.9rem; font-style:italic;">Tableau 1</div>
+      <div style="height:140px; margin-top:1rem; display:flex; align-items:center; justify-content:center; border:2px dashed var(--border-color); border-radius:12px; color:var(--text-secondary); font-size:0.9rem; font-style:italic;">Tableau 2</div>
+      <div style="height:140px; margin-top:1rem; display:flex; align-items:center; justify-content:center; border:2px dashed var(--border-color); border-radius:12px; color:var(--text-secondary); font-size:0.9rem; font-style:italic;">Tableau 3</div>
 
       <div style="margin-top:1rem; font-size:0.78rem; color:var(--text-secondary); line-height:1.8;">
         <p style="margin:0;"><em>Scénario 1. Usage productif des espaces urbains</em></p>
@@ -185,16 +192,16 @@
         <h3 style="margin:0 0 1rem 0; font-size:0.95rem; font-weight:600; color:var(--text-primary);">Limites et précautions d'interprétation</h3>
 
         <h4 style="margin:0 0 0.4rem 0; font-size:0.85rem; font-weight:600; color:var(--text-primary);">1. Nature et statut des données</h4>
-        <p style="margin:0 0 1rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Les données présentées sont issues du stage RECOLTE 2026. Les chiffres ici présentés reposent sur une estimation théorique basée sur des hypothèses de mise en culture et doivent être interprétés avec prudence. Toutefois, ces valeurs prospectives ont pour intérêt d'alimenter le débat sur la reterritorialisation alimentaire.</p>
+        <p style="margin:0 0 1rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Les données présentées ont été compilées lors du stage réalisé en 2026 dans le cadre du projet de recherche RECOLTE. Les chiffres reposent sur une estimation théorique basée à la fois sur des hypothèses de surfaces mises en culture, une observation au moyen cours des productions potagères à Strasbourg et des informations statistiques. Ces données doivent être interprétées avec prudence. Toutefois, ces valeurs prospectives ont pour intérêt d'alimenter le débat sur la reterritorialisation alimentaire.</p>
 
         <h4 style="margin:0 0 0.4rem 0; font-size:0.85rem; font-weight:600; color:var(--text-primary);">2. Représentativité du rendement</h4>
-        <p style="margin:0 0 1rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Le rendement de production de 1,42 kg/m², obtenu via les données du programme de recherche Récolte (à la base de nos calculs), est probablement inférieur au rendement réel. Les données du programme Récolte sont encore fragiles : elles représentent un échantillon détaillé de 10 jardins et ne sont donc pas représentatives des pratiques et des rendements observés dans les jardins familiaux.</p>
+        <p style="margin:0 0 1rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Le rendement de production de 1,42 kg/m², obtenu via les données du programme de recherche Récolte (à la base de nos calculs), est probablement inférieur au rendement réel (très variable d’un jardinier à l’autre). Les données du programme Récolte sont encore fragiles : elles proviennent d’un échantillon détaillé de 10 jardins mais ne sont pas représentatives des pratiques et des rendements observés dans les jardins familiaux.</p>
 
         <h4 style="margin:0 0 0.4rem 0; font-size:0.85rem; font-weight:600; color:var(--text-primary);">3. Incertitude sur les jardins privés et extrapolation prudente</h4>
-        <p style="margin:0 0 0.75rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Si l'apport des jardins publics de l'Eurométropole de Strasbourg (EMS) est connu, celui des jardins privés reste inconnu, faute de données sur leur nombre réel. Toutefois, la superficie totale de ces jardins privés est désormais estimée, depuis le stage Récolte 2026 (Ziegler Antoine), grâce à la base de données OCS GE et à la photo-interprétation.</p>
-        <p style="margin:0 0 0.75rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">En posant l'hypothèse qu'une partie de cette superficie soit effectivement cultivée, on peut estimer un apport supplémentaire non négligeable :</p>
+        <p style="margin:0 0 0.75rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Si les superficies des jardins publics de l'Eurométropole de Strasbourg (EMS) sont connues, celles des jardins privés restent inconnues, faute de données (nombre réel, surfaces et productivité). Toutefois, la superficie totale de ces jardins privés est désormais estimée, depuis le stage 2026 (Ziegler Antoine), financé par la ZAEU, grâce à la base de données OCS GE et à la photo-interprétation.</p>
+        <p style="margin:0 0 0.75rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">En posant l'hypothèse qu'une partie de cette superficie d’espaces privés non artificialisés soit effectivement cultivée, on peut estimer un apport supplémentaire non négligeable :</p>
         <ul style="margin:0; padding-left:1.25rem; font-size:0.82rem; color:var(--text-secondary); line-height:1.8;">
-          <li><strong>À l'échelle de l'EMS :</strong> 10 % des jardins particuliers privés cultivés représenteraient 1 604,6 tonnes, soit 6,4 % de l'apport en légumes consommés par la population résidente de l'EMS.</li>
+          <li><strong>À l'échelle de l'EMS :</strong> si seulement 10 % de la surface des jardins particuliers privés était cultivée, cela pourrait représenter 1 604,6 tonnes, soit 6,4 % de l'apport en légumes consommés par la population résidente de l'EMS. D’autres scénarios sont envisageables.</li>
           <li><strong>À l'échelle de Strasbourg :</strong> 10 % des jardins particuliers privés cultivés représenteraient 322,3 tonnes, soit 2,3 % de l'apport en légumes consommés par la population résidente de Strasbourg.</li>
         </ul>
 
@@ -202,13 +209,15 @@
         <p style="margin:0 0 1rem 0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Les données avancées concernant ces espaces potentiellement cultivables sont ici brutes. Un travail de diagnostic de ces espaces reste nécessaire, portant notamment sur : la pollution des sols, la pollution atmosphérique, l'accessibilité, la concurrence écologique, les aménités, le coût de mobilisation, ainsi que les conflits d'usage autour de ces espaces.</p>
 
         <h4 style="margin:0 0 0.4rem 0; font-size:0.85rem; font-weight:600; color:var(--text-primary);">5. Saisonnalité des rendements et pertes alimentaires potentielles</h4>
-        <p style="margin:0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Pour l'instant, les rendements estimés par le programme Récolte ne tiennent pas compte de la saisonnalité de la production, qui varie d'une saison à l'autre au sein des potagers domestiques. Par ailleurs, ces estimations ne prennent pas en compte les pertes potentielles entre la récolte et la consommation effective (pertes au jardin, lors du stockage, du transport ou de la transformation), qui viendraient réduire d'autant l'apport réellement disponible pour la population.</p>
+        <p style="margin:0; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">Pour la présente cartographie, les rendements estimés par le programme Récolte sont rapportés à un total annuel. Par ailleurs, ces estimations ne prennent pas en compte les pertes potentielles entre la récolte et la consommation effective (pertes au jardin, lors du stockage, du transport ou de la transformation), qui viendraient réduire d'autant l'apport réellement disponible pour la population.</p>
       </div>
 
       <div style="margin-top:1.5rem;">
         <h3 style="margin:0 0 0.75rem 0; font-size:0.9rem; font-weight:600; color:var(--text-primary);">Annexes</h3>
-        <img src="data/projection_RECOLTE/annexe_1.png" alt="Annexe 1" style="width:100%; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/annexe_1.png','data/projection_RECOLTE/annexe_3.png'], 0)" />
-        <img src="data/projection_RECOLTE/annexe_3.png" alt="Annexe 3" style="width:100%; margin-top:1rem; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/annexe_1.png','data/projection_RECOLTE/annexe_3.png'], 1)" />
+        <!-- EMPLACEMENTS À COMPLÉTER : remplacer chaque bloc par l'image de l'annexe, par ex. :
+             <img src="data/projection_RECOLTE/annexe_1.png" alt="Annexe 1" style="width:100%; cursor:zoom-in;" onclick="ouvrirLightbox(this.src, ['data/projection_RECOLTE/annexe_1.png','data/projection_RECOLTE/annexe_3.png'], 0)" /> -->
+        <div style="height:140px; display:flex; align-items:center; justify-content:center; border:2px dashed var(--border-color); border-radius:12px; color:var(--text-secondary); font-size:0.9rem; font-style:italic;">Annexe 1</div>
+        <div style="height:140px; margin-top:1rem; display:flex; align-items:center; justify-content:center; border:2px dashed var(--border-color); border-radius:12px; color:var(--text-secondary); font-size:0.9rem; font-style:italic;">Annexe 3</div>
       </div>
     </div>
 

@@ -25,6 +25,7 @@ function updateLoadingProgress(processed, total, elapsed) {
 
 // OPTIMISATION: Animation des compteurs avec requestAnimationFrame
 function animateCounter(element, start, end, duration = 1000) {
+  if (!element) return; // compteur absent de la page (ex. "familyGardens", retiré de index.html)
   const startTime = performance.now();
   const range = end - start;
   
